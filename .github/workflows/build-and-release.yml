@@ -27,6 +27,8 @@ jobs:
     permissions:
       contents: write # Erforderlich zum Erstellen von Tags und Releases
       packages: read  # Beibehalten, falls für dotnet restore von GitHub Packages benötigt
+    outputs: # Added to share release upload URL
+      release_upload_url: ${{ steps.create_tagged_release.outputs.upload_url }}
 
     steps:
       - name: Checkout Repository
@@ -48,8 +50,8 @@ jobs:
       - name: Run Tests
         run: dotnet test $env:Solution_Name --configuration Release --no-build --verbosity normal
 
-      - name: Publish Project
-        run: dotnet publish $env:Project_Path --configuration Release --output publish --runtime win-x64 --self-contained false --verbosity normal
+      - name: Publish Project as Single Executable # Modified
+        run: dotnet publish $env:Project_Path --configuration Release --output publish --runtime win-x64 --self-contained false -p:PublishSingleFile=true --verbosity normal
         # --self-contained false, da das .NET Runtime auf dem Zielsystem erwartet wird oder mitinstalliert wird
 
       - name: Copy Icon if exists
@@ -59,26 +61,26 @@ jobs:
           }
         shell: pwsh
 
-      - name: Prepare Release Files
+      - name: Prepare Release Executable # Modified
+        id: prepare_executable
         run: |
-          $releaseDir = "AudioMonitor-Release"
-          New-Item -ItemType Directory -Path $releaseDir -Force
-          # Kopiere veröffentlichte Dateien
-          Copy-Item -Path "publish\*" -Destination $releaseDir -Recurse -Force
-          # Erstelle ZIP-Paket
-          Compress-Archive -Path $releaseDir\* -DestinationPath "AudioMonitor-Windows-x64.zip" -Force
+          $executableName = (Get-Item $env:Project_Path).BaseName
+          $sourceExecutable = "publish\\$executableName.exe"
+          $targetExecutable = "AudioMonitor-Windows-x64.exe"
+          Copy-Item -Path $sourceExecutable -Destination $targetExecutable -Force
+          echo "EXECUTABLE_NAME=$targetExecutable" | Out-File -FilePath $env:GITHUB_ENV -Append
         shell: pwsh
 
-      - name: Upload build artifacts
+      - name: Upload build artifact (executable) # Modified
         uses: actions/upload-artifact@v4
         with:
-          name: AudioMonitor-Windows-x64
-          path: AudioMonitor-Windows-x64.zip
+          name: AudioMonitor-Windows-x64-Executable
+          path: ./${{ env.EXECUTABLE_NAME }}
 
       # --- Release für v*-Tags (Produktions-Release) ---
       - name: Create Release for v-Tag
         if: startsWith(github.ref, 'refs/tags/v')
-        id: create_tagged_release
+        id: create_tagged_release # ID is used for output
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,16 +91,16 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Release Asset for v-Tag
+      - name: Upload Release Asset for v-Tag (executable) # Modified
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_tagged_release.outputs.upload_url }}
-          asset_path: ./AudioMonitor-Windows-x64.zip
-          asset_name: AudioMonitor-Windows-x64-${{ github.ref_name }}.zip # Eindeutiger Name mit Tag
-          asset_content_type: application/zip
+          asset_path: ./${{ env.EXECUTABLE_NAME }}
+          asset_name: AudioMonitor-Windows-x64-${{ github.ref_name }}.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
 
       # --- Pre-Release für main-Branch Pushes ---
       - name: Create Tag for Main Branch Build
@@ -125,13 +127,73 @@ jobs:
           draft: false
           prerelease: true
 
-      - name: Upload Asset for Main Branch Release
+      - name: Upload Asset for Main Branch Release (executable) # Modified
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_main_prerelease.outputs.upload_url }}
-          asset_path: ./AudioMonitor-Windows-x64.zip
-          asset_name: AudioMonitor-Windows-x64-${{ env.DEV_TAG_NAME }}.zip
-          asset_content_type: application/zip
+          asset_path: ./${{ env.EXECUTABLE_NAME }}
+          asset_name: AudioMonitor-Windows-x64-${{ env.DEV_TAG_NAME }}.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
+
+  # Optional: Create a self-contained build (larger but doesn't require .NET runtime)
+  build-self-contained:
+    needs: build # Added dependency for release_upload_url
+    runs-on: windows-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore $env:Solution_Name
+
+    - name: Publish self-contained application
+      run: |
+        dotnet publish $env:Project_Path `
+          --configuration Release `
+          --output publish-standalone `
+          --runtime win-x64 `
+          --self-contained true `
+          --verbosity normal `
+          -p:PublishSingleFile=true `
+          -p:PublishTrimmed=false # Kept PublishTrimmed=false as per original
+
+    - name: Copy application icon
+      run: |
+        if (Test-Path "AudioMonitorSolution\\image.ico") {
+          Copy-Item "AudioMonitorSolution\\image.ico" "publish-standalone\\image.ico"
+        }
+
+    - name: Prepare Self-Contained Executable # Modified
+      id: prepare_standalone_executable
+      run: |
+        $executableName = (Get-Item $env:Project_Path).BaseName
+        $sourceExecutable = "publish-standalone\\$executableName.exe"
+        $targetExecutable = "AudioMonitor-Windows-x64-Standalone.exe"
+        Copy-Item -Path $sourceExecutable -Destination $targetExecutable -Force
+        echo "STANDALONE_EXECUTABLE_NAME=$targetExecutable" | Out-File -FilePath $env:GITHUB_ENV -Append
+      shell: pwsh
+
+    - name: Upload standalone artifacts (executable) # Modified
+      uses: actions/upload-artifact@v4
+      with:
+        name: AudioMonitor-Windows-x64-Standalone-Executable
+        path: ./${{ env.STANDALONE_EXECUTABLE_NAME }}
+
+    - name: Upload Standalone Release Asset (executable) # Modified
+      if: startsWith(github.ref, 'refs/tags/v') # This if is fine, job also has it.
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.build.outputs.release_upload_url }} # Corrected upload_url
+        asset_path: ./${{ env.STANDALONE_EXECUTABLE_NAME }}
+        asset_name: AudioMonitor-Windows-x64-Standalone-${{ github.ref_name }}.exe
+        asset_content_type: application/vnd.microsoft.portable-executable

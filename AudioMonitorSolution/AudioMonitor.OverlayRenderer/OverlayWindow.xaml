@@ -13,7 +13,6 @@
         Left="0" Top="0"
         Loaded="Window_Loaded"
         HorizontalAlignment="Stretch" 
-        SizeToContent="Width" 
         >
     <Grid HorizontalAlignment="Stretch">
         <Rectangle x:Name="OverlayBar" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>

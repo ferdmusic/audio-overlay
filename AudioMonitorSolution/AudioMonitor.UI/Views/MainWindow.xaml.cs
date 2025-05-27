@@ -16,6 +16,7 @@ using AudioMonitor.UI.Services;
 using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.IO; // Required for Path operations
 // We might need System.Drawing if we directly use System.Drawing.Rectangle, but Screen.Bounds is already that.
 
 namespace AudioMonitor.UI.Views
@@ -102,7 +103,79 @@ namespace AudioMonitor.UI.Views
             this.Show();
             this.WindowState = WindowState.Normal;
             this.Activate();
-        }        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        }
+
+        private void ResetSettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("Are you sure you want to reset all settings to their default values?",
+                                "Reset Settings", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                if (_settingsService != null && _appSettings != null)
+                {
+                    _settingsService.DeleteSettings();
+                    _appSettings = ApplicationSettings.GetDefault();
+                    _settingsService.SaveApplicationSettings(_appSettings);
+
+                    // Re-initialize with default settings
+                    _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
+
+                    // Update Device ComboBox
+                    var allDevices = new ObservableCollection<AudioDevice>();
+                    if (_audioService != null)
+                    {
+                        var groupedDevices = _audioService.GetGroupedInputDevices();
+                        foreach (var group in groupedDevices)
+                        {
+                            foreach (var device in group.Devices)
+                            {
+                                allDevices.Add(device);
+                            }
+                        }
+                    }
+                    
+                    var collectionViewSource = new CollectionViewSource();
+                    collectionViewSource.Source = allDevices;
+                    collectionViewSource.GroupDescriptions.Add(new PropertyGroupDescription("DeviceType"));
+                    if (_deviceComboBox != null)
+                    {
+                        _deviceComboBox.ItemsSource = collectionViewSource.View;
+                        if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+                        {
+                            var selectedDevice = allDevices.FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
+                            if (selectedDevice != null)
+                            {
+                                _deviceComboBox.SelectedItem = selectedDevice;
+                            }
+                            else if (allDevices.Any())
+                            {
+                                _deviceComboBox.SelectedIndex = 0;
+                                _appSettings.SelectedAudioDeviceId = allDevices[0].Id; // Update settings
+                            }
+                        }
+                        else if (allDevices.Any())
+                        {
+                             _deviceComboBox.SelectedIndex = 0;
+                             _appSettings.SelectedAudioDeviceId = allDevices[0].Id; // Update settings
+                        }
+                    }
+
+
+                    // Restart audio monitoring
+                    _audioService?.StopMonitoring();
+                    if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+                    {
+                        _audioService?.StartMonitoring(_appSettings.SelectedAudioDeviceId);
+                    }
+
+                    InitializeOverlays(); // Re-initialize overlays
+                    AutostartService.SetAutostart(_appSettings.AutostartEnabled);
+
+                    MessageBox.Show("Settings have been reset to default.", "Settings Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
             _isExplicitClose = true;
             // Dispose the TaskbarIcon before shutting down
@@ -129,6 +202,42 @@ namespace AudioMonitor.UI.Views
         {
             // Retrieve the TaskbarIcon from resources
             _myNotifyIcon = (Hardcodet.Wpf.TaskbarNotification.TaskbarIcon)this.Resources["MyNotifyIconResource"];
+
+            // Programmatically add "Reset Settings" menu item
+            if (_myNotifyIcon != null && _myNotifyIcon.ContextMenu != null)
+            {
+                var resetSettingsMenuItem = new System.Windows.Controls.MenuItem { Header = "Reset Settings" };
+                resetSettingsMenuItem.Click += ResetSettingsMenuItem_Click;
+
+                // Insert before the "Exit" item, or at a specific position
+                // Assuming "Exit" is the last item or preceded by a separator
+                int exitItemIndex = -1;
+                for(int i = 0; i < _myNotifyIcon.ContextMenu.Items.Count; i++)
+                {
+                    if ((_myNotifyIcon.ContextMenu.Items[i] as System.Windows.Controls.MenuItem)?.Header.ToString() == "Exit")
+                    {
+                        exitItemIndex = i;
+                        break;
+                    }
+                }
+                if (exitItemIndex > 0 && _myNotifyIcon.ContextMenu.Items[exitItemIndex-1] is Separator)
+                {
+                     _myNotifyIcon.ContextMenu.Items.Insert(exitItemIndex -1, resetSettingsMenuItem);
+                }
+                else if (exitItemIndex != -1)
+                {
+                    _myNotifyIcon.ContextMenu.Items.Insert(exitItemIndex, new Separator());
+                    _myNotifyIcon.ContextMenu.Items.Insert(exitItemIndex + 1, resetSettingsMenuItem);
+                }
+                else // Fallback: add to the end
+                {
+                     if (_myNotifyIcon.ContextMenu.Items.Count > 0 && !(_myNotifyIcon.ContextMenu.Items[_myNotifyIcon.ContextMenu.Items.Count -1] is Separator))
+                     {
+                        _myNotifyIcon.ContextMenu.Items.Add(new Separator());
+                     }
+                    _myNotifyIcon.ContextMenu.Items.Add(resetSettingsMenuItem);
+                }
+            }
 
             _settingsService = new SettingsService();
             _appSettings = _settingsService.LoadApplicationSettings();

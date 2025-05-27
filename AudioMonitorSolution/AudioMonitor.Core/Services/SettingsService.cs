@@ -146,5 +146,25 @@ namespace AudioMonitor.Core.Services
                 Log.Error($"General error saving application settings to {ConfigFilePath}.", ex);
             }
         }
+
+        public void DeleteSettings()
+        {
+            try
+            {
+                if (File.Exists(ConfigFilePath))
+                {
+                    File.Delete(ConfigFilePath);
+                    Log.Info($"Configuration file {ConfigFilePath} deleted successfully.");
+                }
+                else
+                {
+                    Log.Info($"Configuration file {ConfigFilePath} not found. No action taken.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error deleting configuration file {ConfigFilePath}.", ex);
+            }
+        }
     }
 }

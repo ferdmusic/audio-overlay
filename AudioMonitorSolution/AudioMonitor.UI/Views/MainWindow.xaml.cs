@@ -9,6 +9,7 @@ using AudioMonitor.UI.Views;
 using System.ComponentModel;
 using System.Runtime.InteropServices; // Required for DllImport
 using System.Windows.Interop; // Required for WindowInteropHelper
+using AudioMonitor.UI.Services;
 // We might need System.Drawing if we directly use System.Drawing.Rectangle, but Screen.Bounds is already that.
 
 namespace AudioMonitor.UI.Views
@@ -371,6 +372,7 @@ namespace AudioMonitor.UI.Views
 
                 UpdateOverlayLayout(); 
                 _settingsService.SaveApplicationSettings(_appSettings); 
+                AutostartService.SetAutostart(_appSettings.AutostartEnabled);
             }
         }
 

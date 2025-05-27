@@ -14,7 +14,7 @@ namespace AudioMonitor.Core.Services
         private static readonly string ConfigFileName = "config.json";
         // In a real app, use Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
         // For this sandboxed environment, we'll place it in a known subfolder of the app's base directory.
-        private static readonly string ConfigDirectory = Path.Combine(AppContext.BaseDirectory, "AppData"); 
+        private static readonly string ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioMonitor"); 
         private static readonly string ConfigFilePath = Path.Combine(ConfigDirectory, ConfigFileName);
 
         private JsonSerializerOptions _jsonOptions;

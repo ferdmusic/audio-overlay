@@ -1,0 +1,20 @@
+{
+  "Thresholds": [
+    {
+      "Name": "Sicher",
+      "DBFSValue": -18,
+      "Color": "#00FF00"
+    },
+    {
+      "Name": "Achtung",
+      "DBFSValue": -9,
+      "Color": "#FFFF00"
+    },
+    {
+      "Name": "Kritisch",
+      "DBFSValue": -3,
+      "Color": "#FF0000"
+    }
+  ],
+  "UseDefaultColorGradient": true
+}

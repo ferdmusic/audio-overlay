@@ -1,0 +1,12 @@
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0\AudioMonitor.OverlayRenderer.deps.json
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0\AudioMonitor.OverlayRenderer.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.AssemblyInfoInputs.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.AssemblyInfo.cs
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.csproj.CoreCompileInputs.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.sourcelink.json
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\refint\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\AudioMonitor.OverlayRenderer.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0\ref\AudioMonitor.OverlayRenderer.dll

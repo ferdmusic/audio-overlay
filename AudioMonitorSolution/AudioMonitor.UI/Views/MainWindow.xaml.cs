@@ -100,7 +100,18 @@ namespace AudioMonitor.UI.Views
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
             _isExplicitClose = true;
+            // Dispose the TaskbarIcon before shutting down
+            if (_myNotifyIcon != null)
+            {
+                _myNotifyIcon.Dispose();
+                _myNotifyIcon = null; // Set to null to prevent further access
+            }
             Application.Current.Shutdown();
+        }
+
+        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowSettings();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)

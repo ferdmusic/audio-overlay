@@ -9,11 +9,13 @@
         ResizeMode="NoResize"
         ShowActivated="False"
         Focusable="False"
-        Width="1920" Height="10"
+        Height="10"
         Left="0" Top="0"
         Loaded="Window_Loaded"
+        HorizontalAlignment="Stretch" 
+        SizeToContent="Width" 
         >
-    <Grid>
-        <Rectangle x:Name="OverlayBar" Height="10" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+    <Grid HorizontalAlignment="Stretch">
+        <Rectangle x:Name="OverlayBar" Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
     </Grid>
 </Window>

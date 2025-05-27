@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioMonitor.Core", "AudioMonitor.Core\AudioMonitor.Core.csproj", "{013B2CC5-04CC-4350-904E-C5D3D90F1A22}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioMonitor.OverlayRenderer", "AudioMonitor.OverlayRenderer\AudioMonitor.OverlayRenderer.csproj", "{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{013B2CC5-04CC-4350-904E-C5D3D90F1A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013B2CC5-04CC-4350-904E-C5D3D90F1A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013B2CC5-04CC-4350-904E-C5D3D90F1A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013B2CC5-04CC-4350-904E-C5D3D90F1A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

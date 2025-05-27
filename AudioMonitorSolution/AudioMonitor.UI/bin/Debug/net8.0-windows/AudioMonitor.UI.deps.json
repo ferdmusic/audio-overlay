@@ -150,7 +150,8 @@
       "System.Security.Principal.Windows/4.7.0": {},
       "AudioMonitor.Core/1.0.0": {
         "dependencies": {
-          "NAudio": "2.2.1"
+          "NAudio": "2.2.1",
+          "NAudio.Asio": "2.2.1"
         },
         "runtime": {
           "AudioMonitor.Core.dll": {

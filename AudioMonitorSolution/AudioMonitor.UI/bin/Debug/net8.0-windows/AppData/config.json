@@ -1,9 +1,9 @@
 {
-  "SelectedAudioDeviceId": "{0.0.1.00000000}.{e26b8b83-bef7-4e7d-bfbf-4a571e59e136}",
-  "OverlayPosition": "left",
+  "SelectedAudioDeviceId": "{0.0.1.00000000}.{2a5462b5-d603-46d1-9031-9645f2ef5121}",
+  "OverlayPosition": "top",
   "OverlayHeight": 10,
-  "AcousticWarningEnabled": false,
-  "AcousticWarningVolume": 0.75,
+  "AcousticWarningEnabled": true,
+  "AcousticWarningVolume": 0.537773933102653,
   "AutostartEnabled": false,
   "WarningLevels": {
     "Thresholds": [
@@ -23,6 +23,7 @@
         "Color": "#FF0000"
       }
     ],
-    "UseDefaultColorGradient": true
+    "UseDefaultColorGradient": true,
+    "DefaultColor": "#A9A9A9"
   }
 }

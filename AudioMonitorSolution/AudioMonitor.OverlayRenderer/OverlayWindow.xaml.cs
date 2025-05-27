@@ -10,7 +10,6 @@ namespace AudioMonitor.OverlayRenderer
     {
         private DispatcherTimer _fadeTimer;
         private double _targetOpacity = 0.1;
-        private double _fadeDuration = 0.2; // seconds
         private DateTime _criticalVisibleUntil = DateTime.MinValue;
         private bool _isCritical = false;
 
@@ -50,7 +49,7 @@ namespace AudioMonitor.OverlayRenderer
             this.Height = rect.Height;
         }
 
-        private void FadeTimer_Tick(object sender, EventArgs e)
+        private void FadeTimer_Tick(object? sender, EventArgs e)
         {
             if (_isCritical && DateTime.Now < _criticalVisibleUntil)
             {

@@ -1,188 +1,137 @@
 # GitHub workflow to build and release AudioMonitor WPF application
 # This workflow builds the application in Release mode and creates a GitHub release with the binaries
 
-name: Build and Release AudioMonitor
+name: Build and Release
 
 on:
   push:
-    branches: [ "main", "master" ]
-    tags: [ "v*" ]
+    branches:
+      - main
+      - master # Falls du master verwendest
+    tags:
+      - 'v*' # Pushes zu v* Tags
   pull_request:
-    branches: [ "main", "master" ]
+    branches:
+      - main
+      - master # Falls du master verwendest
+
+env:
+  Solution_Name: AudioMonitorSolution\AudioMonitorSolution.sln
+  Project_Path: AudioMonitorSolution\AudioMonitor.UI\AudioMonitor.UI.csproj
+  Output_Directory: AudioMonitorSolution\AudioMonitor.UI\bin\Release\net8.0-windows
+  Publish_Directory: AudioMonitorSolution\AudioMonitor.UI\bin\Release\net8.0-windows\publish
 
 jobs:
   build:
     runs-on: windows-latest
-
-    env:
-      Solution_Name: AudioMonitorSolution\AudioMonitorSolution.sln
-      Project_Path: AudioMonitorSolution\AudioMonitor.UI\AudioMonitor.UI.csproj
-      Output_Directory: AudioMonitorSolution\AudioMonitor.UI\bin\Release\net8.0-windows
-      Publish_Directory: AudioMonitorSolution\AudioMonitor.UI\bin\Release\net8.0-windows\publish
+    permissions:
+      contents: write # Erforderlich zum Erstellen von Tags und Releases
+      packages: read  # Beibehalten, falls für dotnet restore von GitHub Packages benötigt
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Erforderlich, um Tags abzurufen und neue zu pushen
 
-    # Install the .NET Core workload
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Spezifiziere deine .NET Version
 
-    # Restore dependencies
-    - name: Restore dependencies
-      run: dotnet restore $env:Solution_Name
+      - name: Restore Dependencies
+        run: dotnet restore $env:Solution_Name
 
-    # Build the solution in Release mode
-    - name: Build solution
-      run: dotnet build $env:Solution_Name --configuration Release --no-restore
+      - name: Build Project
+        run: dotnet build $env:Solution_Name --configuration Release --no-restore
 
-    # Run tests if any exist
-    - name: Run tests
-      run: dotnet test $env:Solution_Name --configuration Release --no-build --verbosity normal
-      continue-on-error: true
+      - name: Run Tests
+        run: dotnet test $env:Solution_Name --configuration Release --no-build --verbosity normal
 
-    # Publish the application with all dependencies
-    - name: Publish application
-      run: |
-        dotnet publish $env:Project_Path `
-          --configuration Release `
-          --output publish `
-          --runtime win-x64 `
-          --self-contained false `
-          --verbosity normal
+      - name: Publish Project
+        run: dotnet publish $env:Project_Path --configuration Release --output publish --runtime win-x64 --self-contained false --verbosity normal
+        # --self-contained false, da das .NET Runtime auf dem Zielsystem erwartet wird oder mitinstalliert wird
 
-    # Copy the icon file to the publish directory
-    - name: Copy application icon
-      run: |
-        if (Test-Path "AudioMonitorSolution\image.ico") {
-          Copy-Item "AudioMonitorSolution\image.ico" "publish\image.ico"
-        }
+      - name: Copy Icon if exists
+        run: |
+          if (Test-Path "AudioMonitorSolution\image.ico") {
+            Copy-Item "AudioMonitorSolution\image.ico" "publish\image.ico"
+          }
+        shell: pwsh
 
-    # Create release package
-    - name: Create release package
-      run: |
-        $releaseDir = "AudioMonitor-Release"
-        New-Item -ItemType Directory -Path $releaseDir -Force
-        
-        # Copy published files
-        Copy-Item -Path "publish\*" -Destination $releaseDir -Recurse -Force
-        
-        # Create ZIP package
-        Compress-Archive -Path $releaseDir -DestinationPath "AudioMonitor-Windows-x64.zip" -Force
+      - name: Prepare Release Files
+        run: |
+          $releaseDir = "AudioMonitor-Release"
+          New-Item -ItemType Directory -Path $releaseDir -Force
+          # Kopiere veröffentlichte Dateien
+          Copy-Item -Path "publish\*" -Destination $releaseDir -Recurse -Force
+          # Erstelle ZIP-Paket
+          Compress-Archive -Path $releaseDir\* -DestinationPath "AudioMonitor-Windows-x64.zip" -Force
+        shell: pwsh
 
-    # Upload build artifacts for all builds
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: AudioMonitor-Windows-x64
-        path: AudioMonitor-Windows-x64.zip
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AudioMonitor-Windows-x64
+          path: AudioMonitor-Windows-x64.zip
 
-    # Create GitHub Release only for tags
-    - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref_name }}
-        release_name: AudioMonitor ${{ github.ref_name }}
-        body: |
-          ## AudioMonitor Release ${{ github.ref_name }}
-          
-          ### Features
-          - Audio level monitoring with visual overlay
-          - System tray integration
-          - Customizable warning thresholds
-          - Modern WPF interface
-          
-          ### Installation
-          1. Download the `AudioMonitor-Windows-x64.zip` file
-          2. Extract to a folder of your choice
-          3. Run `AudioMonitor.UI.exe`
-          
-          ### Requirements
-          - Windows 10/11
-          - .NET 8.0 Runtime (Desktop Apps)
-          
-          ### Changes
-          See the commit history for detailed changes in this release.
-        draft: false
-        prerelease: false
+      # --- Release für v*-Tags (Produktions-Release) ---
+      - name: Create Release for v-Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: create_tagged_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }} # github.ref_name gibt den Tag-Namen direkt
+          body: "Offizielles Release für Version ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
 
-    # Upload release asset only for tags
-    - name: Upload Release Asset
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./AudioMonitor-Windows-x64.zip
-        asset_name: AudioMonitor-Windows-x64.zip
-        asset_content_type: application/zip
+      - name: Upload Release Asset for v-Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_tagged_release.outputs.upload_url }}
+          asset_path: ./AudioMonitor-Windows-x64.zip
+          asset_name: AudioMonitor-Windows-x64-${{ github.ref_name }}.zip # Eindeutiger Name mit Tag
+          asset_content_type: application/zip
 
-  # Optional: Create a self-contained build (larger but doesn't require .NET runtime)
-  build-self-contained:
-    runs-on: windows-latest
-    if: startsWith(github.ref, 'refs/tags/v')
+      # --- Pre-Release für main-Branch Pushes ---
+      - name: Create Tag for Main Branch Build
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          $tagName = "dev-build-${{ github.run_number }}-${{ github.sha }}"
+          echo "DEV_TAG_NAME=$tagName" | Out-File -FilePath $env:GITHUB_ENV -Append
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git tag $tagName
+          git push origin $tagName
+        shell: pwsh
 
-    env:
-      Solution_Name: AudioMonitorSolution\AudioMonitorSolution.sln
-      Project_Path: AudioMonitorSolution\AudioMonitor.UI\AudioMonitor.UI.csproj
+      - name: Create Release for Main Branch Build
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        id: create_main_prerelease
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.DEV_TAG_NAME }}
+          release_name: "Development Build (main #${{ github.run_number }})"
+          body: "Automatisches Pre-Release vom Push auf den main-Branch. Commit: ${{ github.sha }}. Build-Details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          draft: false
+          prerelease: true
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-
-    - name: Install .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-
-    - name: Restore dependencies
-      run: dotnet restore $env:Solution_Name
-
-    - name: Publish self-contained application
-      run: |
-        dotnet publish $env:Project_Path `
-          --configuration Release `
-          --output publish-standalone `
-          --runtime win-x64 `
-          --self-contained true `
-          --verbosity normal `
-          -p:PublishSingleFile=true `
-          -p:PublishTrimmed=false
-
-    - name: Copy application icon
-      run: |
-        if (Test-Path "AudioMonitorSolution\image.ico") {
-          Copy-Item "AudioMonitorSolution\image.ico" "publish-standalone\image.ico"
-        }
-
-    - name: Create self-contained package
-      run: |
-        $releaseDir = "AudioMonitor-Standalone"
-        New-Item -ItemType Directory -Path $releaseDir -Force
-        Copy-Item -Path "publish-standalone\*" -Destination $releaseDir -Recurse -Force
-        Compress-Archive -Path $releaseDir -DestinationPath "AudioMonitor-Windows-x64-Standalone.zip" -Force
-
-    - name: Upload standalone artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: AudioMonitor-Windows-x64-Standalone
-        path: AudioMonitor-Windows-x64-Standalone.zip
-
-    - name: Upload Standalone Release Asset
-      if: startsWith(github.ref, 'refs/tags/v')
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./AudioMonitor-Windows-x64-Standalone.zip
-        asset_name: AudioMonitor-Windows-x64-Standalone.zip
-        asset_content_type: application/zip
+      - name: Upload Asset for Main Branch Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_main_prerelease.outputs.upload_url }}
+          asset_path: ./AudioMonitor-Windows-x64.zip
+          asset_name: AudioMonitor-Windows-x64-${{ env.DEV_TAG_NAME }}.zip
+          asset_content_type: application/zip

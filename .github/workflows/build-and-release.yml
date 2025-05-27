@@ -42,10 +42,10 @@ jobs:
           dotnet-version: '8.0.x' # Spezifiziere deine .NET Version
 
       - name: Restore Dependencies
-        run: dotnet restore $env:Solution_Name
+        run: dotnet restore $env:Solution_Name --runtime win-x64
 
       - name: Build Project
-        run: dotnet build $env:Solution_Name --configuration Release --no-restore
+        run: dotnet build $env:Solution_Name --configuration Release --no-restore --runtime win-x64
 
       - name: Run Tests
         run: dotnet test $env:Solution_Name --configuration Release --no-build --verbosity normal
@@ -142,6 +142,10 @@ jobs:
   build-self-contained:
     needs: build # Added dependency for release_upload_url
     runs-on: windows-latest
+    # env section should be here if it's specific to this job, or use global env
+    env:
+      Solution_Name: AudioMonitorSolution\AudioMonitorSolution.sln
+      Project_Path: AudioMonitorSolution\AudioMonitor.UI\AudioMonitor.UI.csproj
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -152,7 +156,7 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Restore dependencies
-      run: dotnet restore $env:Solution_Name
+      run: dotnet restore $env:Solution_Name --runtime win-x64
 
     - name: Publish self-contained application
       run: |

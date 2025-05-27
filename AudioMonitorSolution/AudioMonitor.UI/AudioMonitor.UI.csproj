@@ -1,0 +1,105 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../AudioMonitor.Core/AudioMonitor.Core.csproj" />
+    <ProjectReference Include="../AudioMonitor.OverlayRenderer/AudioMonitor.OverlayRenderer.csproj" />
+  </ItemGroup>
+</Project>
+EOL && mkdir Views && cat <<EOL > Views/MainWindow.xaml
+<Window x:Class="AudioMonitor.UI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+    </Grid>
+</Window>
+EOL && cat <<EOL > Views/MainWindow.xaml.cs
+// Using System.Windows; // Not available in this environment, but would be in WPF
+// Using System.Windows.Controls; // Not available in this environment
+
+namespace AudioMonitor.UI.Views
+{
+    public partial class MainWindow // : Window // Window class is not available
+    {
+        public MainWindow()
+        {
+            // InitializeComponent(); // Method is not available
+        }
+    }
+}
+EOL && cat <<EOL > Views/SettingsWindow.xaml
+<Window x:Class="AudioMonitor.UI.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SettingsWindow" Height="450" Width="800">
+    <Grid>
+    </Grid>
+</Window>
+EOL && cat <<EOL > Views/SettingsWindow.xaml.cs
+// Using System.Windows; // Not available in this environment, but would be in WPF
+
+namespace AudioMonitor.UI.Views
+{
+    public partial class SettingsWindow // : Window // Window class is not available
+    {
+        public SettingsWindow()
+        {
+            // InitializeComponent(); // Method is not available
+        }
+    }
+}
+EOL && cat <<EOL > App.xaml
+<Application x:Class="AudioMonitor.UI.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:AudioMonitor.UI"
+             StartupUri="Views/MainWindow.xaml">
+    <Application.Resources>
+    </Application.Resources>
+</Application>
+EOL && cat <<EOL > App.xaml.cs
+// Using System.Windows; // Not available in this environment, but would be in WPF
+
+namespace AudioMonitor.UI
+{
+    public partial class App // : Application // Application class is not available
+    {
+    }
+}
+EOL && cd .. && dotnet sln AudioMonitorSolution.sln add AudioMonitor.UI/AudioMonitor.UI.csproj && # Add project references
+# AudioMonitor.UI already references Core and OverlayRenderer in its .csproj
+dotnet add AudioMonitor.OverlayRenderer/AudioMonitor.OverlayRenderer.csproj reference AudioMonitor.Core/AudioMonitor.Core.csproj && # Add NAudio package to AudioMonitor.Core
+dotnet add AudioMonitor.Core/AudioMonitor.Core.csproj package NAudio -v 2.2.1 && # Create other empty files
+mkdir -p AudioMonitor.Core/Services && touch AudioMonitor.Core/Services/AudioService.cs && touch AudioMonitor.Core/Services/SettingsService.cs && mkdir -p AudioMonitor.OverlayRenderer/Windows && touch AudioMonitor.OverlayRenderer/Windows/OverlayWindow.cs && # Create logging class in AudioMonitor.Core
+mkdir -p AudioMonitor.Core/Logging && cat <<EOL > AudioMonitor.Core/Logging/Log.cs
+namespace AudioMonitor.Core.Logging
+{
+    public static class Log
+    {
+        public static void Debug(string message)
+        {
+            System.Diagnostics.Debug.WriteLine($"DEBUG: {message}");
+        }
+
+        public static void Info(string message)
+        {
+            System.Diagnostics.Debug.WriteLine($"INFO: {message}");
+        }
+
+        public static void Error(string message, System.Exception ex = null)
+        {
+            System.Diagnostics.Debug.WriteLine($"ERROR: {message}");
+            if (ex != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exception: {ex}");
+            }
+        }
+    }
+}
+EOL && echo "Listing all created files:" && ls -R /app/AudioMonitorSolution && echo "NAudio package version used: 2.2.1"

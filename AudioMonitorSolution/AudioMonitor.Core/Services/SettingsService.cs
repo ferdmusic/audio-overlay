@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AudioMonitor.Core.Models;
 using AudioMonitor.Core.Logging;
+using AudioMonitor.Core.Models;
 
 namespace AudioMonitor.Core.Services
 {
@@ -14,7 +10,7 @@ namespace AudioMonitor.Core.Services
         private static readonly string ConfigFileName = "config.json";
         // In a real app, use Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
         // For this sandboxed environment, we'll place it in a known subfolder of the app's base directory.
-        private static readonly string ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioMonitor"); 
+        private static readonly string ConfigDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AudioMonitor");
         private static readonly string ConfigFilePath = Path.Combine(ConfigDirectory, ConfigFileName);
 
         private JsonSerializerOptions _jsonOptions;
@@ -28,7 +24,7 @@ namespace AudioMonitor.Core.Services
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             };
-            
+
             try
             {
                 if (!Directory.Exists(ConfigDirectory))
@@ -53,7 +49,7 @@ namespace AudioMonitor.Core.Services
                     Log.Info($"Loading application settings from {ConfigFilePath}");
                     string json = File.ReadAllText(ConfigFilePath);
                     var settings = JsonSerializer.Deserialize<ApplicationSettings>(json, _jsonOptions);
-                    
+
                     if (settings != null)
                     {
                         // Ensure WarningLevels is initialized if null
@@ -69,8 +65,8 @@ namespace AudioMonitor.Core.Services
                         }
                         else
                         {
-                           settings.WarningLevels.SortThresholds(); // Ensure they are sorted upon loading
-                           Log.Info($"Successfully loaded {settings.WarningLevels.Thresholds.Count} thresholds.");
+                            settings.WarningLevels.SortThresholds(); // Ensure they are sorted upon loading
+                            Log.Info($"Successfully loaded {settings.WarningLevels.Thresholds.Count} thresholds.");
                         }
 
                         // Validate and default OverlayThickness if necessary (e.g., if it's a new setting)
@@ -102,7 +98,7 @@ namespace AudioMonitor.Core.Services
             }
             catch (JsonException jsonEx)
             {
-                 Log.Error($"JSON deserialization error loading application settings from {ConfigFilePath}. Details: {jsonEx.Message}. Using defaults.", jsonEx);
+                Log.Error($"JSON deserialization error loading application settings from {ConfigFilePath}. Details: {jsonEx.Message}. Using defaults.", jsonEx);
             }
             catch (Exception ex)
             {
@@ -111,7 +107,7 @@ namespace AudioMonitor.Core.Services
 
             // If any error occurs or file doesn't exist, create, save, and return default settings.
             var defaultSettings = ApplicationSettings.GetDefault();
-            SaveApplicationSettings(defaultSettings); 
+            SaveApplicationSettings(defaultSettings);
             return defaultSettings;
         }
 

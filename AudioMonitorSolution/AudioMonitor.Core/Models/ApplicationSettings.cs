@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace AudioMonitor.Core.Models
 {
     public enum OverlayEdge

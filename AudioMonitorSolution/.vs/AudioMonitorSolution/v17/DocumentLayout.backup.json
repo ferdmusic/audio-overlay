@@ -1,7 +1,16 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}|AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj|c:\\users\\ferdmusic\\documents\\github\\audio-overlay\\audiomonitorsolution\\audiomonitor.overlayrenderer\\audiomonitor.overlayrenderer.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{C925A40A-255B-4FB3-99D2-E6AFB38D4A62}|AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj|solutionrelative:audiomonitor.overlayrenderer\\audiomonitor.overlayrenderer.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{013B2CC5-04CC-4350-904E-C5D3D90F1A22}|AudioMonitor.Core\\AudioMonitor.Core.csproj|c:\\users\\ferdmusic\\documents\\github\\audio-overlay\\audiomonitorsolution\\audiomonitor.core\\audiomonitor.core.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{013B2CC5-04CC-4350-904E-C5D3D90F1A22}|AudioMonitor.Core\\AudioMonitor.Core.csproj|solutionrelative:audiomonitor.core\\audiomonitor.core.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,11 +18,33 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AudioMonitor.OverlayRenderer",
+              "DocumentMoniker": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+              "RelativeDocumentMoniker": "AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+              "ToolTip": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+              "RelativeToolTip": "AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-27T20:34:57.686Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AudioMonitor.Core",
+              "DocumentMoniker": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj",
+              "RelativeDocumentMoniker": "AudioMonitor.Core\\AudioMonitor.Core.csproj",
+              "ToolTip": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj",
+              "RelativeToolTip": "AudioMonitor.Core\\AudioMonitor.Core.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-05-27T20:34:39.611Z",
+              "EditorCaption": ""
             }
           ]
         }

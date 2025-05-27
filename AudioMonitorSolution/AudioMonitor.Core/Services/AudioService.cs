@@ -1,14 +1,10 @@
 // In AudioMonitor.Core/Services/AudioService.cs
-using NAudio.Wave;
-using NAudio.CoreAudioApi; // For MMDeviceEnumerator
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AudioMonitor.Core.Logging;
+using NAudio.CoreAudioApi; // For MMDeviceEnumerator
+using NAudio.Wave;
 
 #if ASIO_SUPPORT
 // We need AsioDriver for GetAsioDriverNames()
-using NAudio.Wave.Asio; 
 #endif
 
 namespace AudioMonitor.Core.Services
@@ -31,7 +27,7 @@ namespace AudioMonitor.Core.Services
         private string? _monitoringDeviceId;
         // private float[]? _asioBuffer; // CS0169: Field is never used. Commenting out for now
 
-        public string? CurrentDeviceId => _monitoringDeviceId; 
+        public string? CurrentDeviceId => _monitoringDeviceId;
 
         public event EventHandler<double>? LevelChanged; // Made nullable
         public double CurrentDBFSLevel { get; private set; } = -96.0; // Default to a low value, representing silence
@@ -45,13 +41,14 @@ namespace AudioMonitor.Core.Services
             {
                 var mmDevices = enumerator.EnumerateAudioEndPoints(DataFlow.Capture, DeviceState.Active).ToList();
                 Log.Info($"Found {mmDevices.Count} active WASAPI capture devices.");
-                for(int i=0; i < mmDevices.Count; i++)
+                for (int i = 0; i < mmDevices.Count; i++)
                 {
                     var device = mmDevices[i];
                     bool isFocusrite = device.FriendlyName.ToLowerInvariant().Contains("focusrite");
-                    devices.Add(new AudioDevice {
+                    devices.Add(new AudioDevice
+                    {
                         Name = device.FriendlyName,
-                        Id = device.ID, 
+                        Id = device.ID,
                         IsFocusrite = isFocusrite
                     });
                     Log.Info($"Device {i}: Name='{device.FriendlyName}', ID='{device.ID}', IsFocusrite={isFocusrite}");
@@ -73,7 +70,8 @@ namespace AudioMonitor.Core.Services
                 {
                     string driverName = asioDriverNames[i];
                     bool isFocusrite = driverName.ToLowerInvariant().Contains("focusrite");
-                    devices.Add(new AudioDevice {
+                    devices.Add(new AudioDevice
+                    {
                         Name = $"ASIO: {driverName}",
                         Id = $"ASIO:{driverName}",
                         IsFocusrite = isFocusrite
@@ -114,17 +112,17 @@ namespace AudioMonitor.Core.Services
                     int desiredSampleRate = 44100; // Or a supported rate from driver capabilities
 
                     Log.Info($"ASIO: Initializing with {desiredChannels} channels at {desiredSampleRate} Hz. Driver input channels: {_asioOutDevice.DriverInputChannelCount}");
-                    
+
                     _asioOutDevice.InitRecordAndPlayback(
                         null, // No playback source, only recording
                         desiredChannels,
                         desiredSampleRate);
-                    
+
                     // Optional: Set input channel offset if you don't want to record from the first channels
                     // _asioOutDevice.InputChannelOffset = 0; // Default is 0
 
                     _asioOutDevice.AudioAvailable += OnAsioAudioAvailable;
-                    
+
                     _asioOutDevice.Play(); // Starts the ASIO engine (and thus recording)
                     Log.Info($"Started ASIO monitoring on driver: {driverName}");
                     return;
@@ -145,15 +143,16 @@ namespace AudioMonitor.Core.Services
                 var enumerator = new MMDeviceEnumerator();
                 MMDevice? captureDevice = null;
 
-                if (string.IsNullOrEmpty(deviceId)) 
+                if (string.IsNullOrEmpty(deviceId))
                 {
                     captureDevice = enumerator.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Console);
-                    if (captureDevice == null) {
-                         Log.Error("No default WASAPI capture device found.");
-                         _monitoringDeviceId = null;
-                         return;
+                    if (captureDevice == null)
+                    {
+                        Log.Error("No default WASAPI capture device found.");
+                        _monitoringDeviceId = null;
+                        return;
                     }
-                    _monitoringDeviceId = captureDevice.ID; 
+                    _monitoringDeviceId = captureDevice.ID;
                     Log.Info($"No device ID specified, using default WASAPI capture device: {captureDevice.FriendlyName} (ID: {_monitoringDeviceId})");
                 }
                 else
@@ -162,7 +161,7 @@ namespace AudioMonitor.Core.Services
                     {
                         captureDevice = enumerator.GetDevice(deviceId);
                     }
-                    catch (Exception ex) 
+                    catch (Exception ex)
                     {
                         Log.Error($"Error getting WASAPI device with ID \'{deviceId}\'.", ex);
                         _monitoringDeviceId = null;
@@ -180,14 +179,14 @@ namespace AudioMonitor.Core.Services
                 _waveInDevice = new WasapiCapture(captureDevice);
                 _waveInDevice.DataAvailable += OnWaveInDataAvailable;
                 _waveInDevice.RecordingStopped += OnWaveInRecordingStopped;
-                
+
                 Log.Info($"Starting WASAPI monitoring on device: {captureDevice.FriendlyName} (ID: {_monitoringDeviceId}) WaveFormat: {_waveInDevice.WaveFormat} Hz, {_waveInDevice.WaveFormat.Channels} channels, {_waveInDevice.WaveFormat.BitsPerSample}-bit");
                 _waveInDevice.StartRecording();
             }
             catch (Exception ex)
             {
                 Log.Error($"Failed to start WASAPI monitoring on device ID: {_monitoringDeviceId ?? deviceId}", ex);
-                _waveInDevice?.Dispose(); 
+                _waveInDevice?.Dispose();
                 _waveInDevice = null;
                 _monitoringDeviceId = null;
             }
@@ -200,7 +199,7 @@ namespace AudioMonitor.Core.Services
 
             // Get samples as interleaved floats. This is often the easiest way to process.
             float[] samples = e.GetAsInterleavedSamples();
-            
+
             if (samples.Length == 0)
             {
                 CurrentDBFSLevel = -96.0;
@@ -240,7 +239,7 @@ namespace AudioMonitor.Core.Services
             }
 
             float maxSample = 0f;
-            
+
             if (_waveInDevice.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
             {
                 for (int index = 0; index < e.BytesRecorded; index += 4) // 4 bytes per float
@@ -278,7 +277,7 @@ namespace AudioMonitor.Core.Services
                         byte byte3 = e.Buffer[i * 3 + 2];
                         int sample24 = (byte3 << 16) | (byte2 << 8) | byte1;
                         // Sign extend if negative
-                        if ((sample24 & 0x800000) != 0) sample24 |= ~0xFFFFFF; 
+                        if ((sample24 & 0x800000) != 0) sample24 |= ~0xFFFFFF;
                         float sampleFloat = sample24 / 8388608f; // Convert to -1.0 to 1.0 range
                         float absSample = Math.Abs(sampleFloat);
                         if (absSample > maxSample) maxSample = absSample;
@@ -351,7 +350,7 @@ namespace AudioMonitor.Core.Services
                 _waveInDevice.Dispose();
                 _waveInDevice = null;
             }
-            
+
             if (_monitoringDeviceId != null)
             {
                 _monitoringDeviceId = null;
@@ -377,7 +376,7 @@ namespace AudioMonitor.Core.Services
             // _asioOutDevice is already handled in StopMonitoring()
             // No need to check for AsioCapture anymore as we've switched to AsioOut
 #endif
-            if (_waveInDevice is WasapiCapture wasapiCaptureInstance) 
+            if (_waveInDevice is WasapiCapture wasapiCaptureInstance)
             {
                 // These are typically unsubscribed when _waveInDevice is set to null or re-assigned,
                 // but explicit unsubscription here before nullifying is safer if StopMonitoring wasn't called.

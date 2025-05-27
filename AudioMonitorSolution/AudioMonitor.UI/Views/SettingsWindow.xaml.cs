@@ -1,3 +1,4 @@
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using AudioMonitor.Core.Services;
@@ -11,45 +12,53 @@ namespace AudioMonitor.UI.Views
     public partial class SettingsWindow : Window
     {
         private readonly AudioService _audioService;
-        public ApplicationSettings CurrentSettings { get; private set; }
-
-        public SettingsWindow(ApplicationSettings settings, AudioService audioService)
+        public ApplicationSettings CurrentSettings { get; private set; }        public SettingsWindow(ApplicationSettings settings, AudioService audioService)
         {
-            InitializeComponent();
-
-            _audioService = audioService;
-            CurrentSettings = settings;
-
-            // Populate Audio Input ComboBox
-            var devices = _audioService.GetInputDevices();
-            AudioInputComboBox.ItemsSource = devices;
-            if (!string.IsNullOrEmpty(CurrentSettings.SelectedAudioDeviceId))
+            try
             {
-                var selectedDev = devices.FirstOrDefault(d => d.Id == CurrentSettings.SelectedAudioDeviceId);
-                if (selectedDev != null) AudioInputComboBox.SelectedItem = selectedDev;
+                InitializeComponent();
+
+                _audioService = audioService;
+                CurrentSettings = settings;
+
+                // Populate Audio Input ComboBox
+                var devices = _audioService.GetInputDevices();
+                AudioInputComboBox.Items.Clear(); // Add this line
+                AudioInputComboBox.ItemsSource = devices;
+                if (!string.IsNullOrEmpty(CurrentSettings.SelectedAudioDeviceId))
+                {
+                    var selectedDev = devices.FirstOrDefault(d => d.Id == CurrentSettings.SelectedAudioDeviceId);
+                    if (selectedDev != null) AudioInputComboBox.SelectedItem = selectedDev;
+                    else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
+                }
                 else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
+
+                // Populate Overlay Position ComboBox
+                OverlayPositionComboBox.Items.Clear(); // Add this line
+                OverlayPositionComboBox.ItemsSource = System.Enum.GetValues(typeof(OverlayEdge)); // Changed from OverlayBehaviorComboBox
+                OverlayPositionComboBox.SelectedItem = CurrentSettings.OverlayPosition; // Changed from OverlayBehaviorComboBox
+
+                // Set threshold text boxes
+                ThresholdSafeTextBox.Text = CurrentSettings.ThresholdSafe.ToString();
+                ThresholdWarningTextBox.Text = CurrentSettings.ThresholdWarning.ToString();
+                ThresholdCriticalTextBox.Text = CurrentSettings.ThresholdCritical.ToString();
+
+                // Set overlay thickness
+                OverlayThicknessTextBox.Text = CurrentSettings.OverlayThickness.ToString();
+
+                // Set other control values from CurrentSettings
+                AcousticWarningsCheckBox.IsChecked = CurrentSettings.AcousticWarningEnabled; // Changed from EnableAcousticWarningsCheckBox
+                AutostartCheckBox.IsChecked = CurrentSettings.AutostartEnabled; // Changed from StartWithWindowsCheckBox
+
+                // Set Acoustic Volume Slider and Text
+                AcousticVolumeSlider.Value = CurrentSettings.AcousticWarningVolume * 100;
+                AcousticVolumeText.Text = $"{AcousticVolumeSlider.Value}%";
             }
-            else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
-
-            // Populate Overlay Position ComboBox
-            OverlayPositionComboBox.ItemsSource = System.Enum.GetValues(typeof(OverlayEdge)); // Changed from OverlayBehaviorComboBox
-            OverlayPositionComboBox.SelectedItem = CurrentSettings.OverlayPosition; // Changed from OverlayBehaviorComboBox
-
-            // Set threshold text boxes
-            ThresholdSafeTextBox.Text = CurrentSettings.ThresholdSafe.ToString();
-            ThresholdWarningTextBox.Text = CurrentSettings.ThresholdWarning.ToString();
-            ThresholdCriticalTextBox.Text = CurrentSettings.ThresholdCritical.ToString();
-
-            // Set overlay thickness
-            OverlayThicknessTextBox.Text = CurrentSettings.OverlayThickness.ToString();
-
-            // Set other control values from CurrentSettings
-            AcousticWarningsCheckBox.IsChecked = CurrentSettings.AcousticWarningEnabled; // Changed from EnableAcousticWarningsCheckBox
-            AutostartCheckBox.IsChecked = CurrentSettings.AutostartEnabled; // Changed from StartWithWindowsCheckBox
-
-            // Set Acoustic Volume Slider and Text
-            AcousticVolumeSlider.Value = CurrentSettings.AcousticWarningVolume * 100;
-            AcousticVolumeText.Text = $"{AcousticVolumeSlider.Value}%";
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Error in SettingsWindow constructor: {ex.Message}\n\nStack trace:\n{ex.StackTrace}", "SettingsWindow Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
         }
 
         private void SaveSettings_Click(object sender, RoutedEventArgs e) // Changed from SaveButton_Click

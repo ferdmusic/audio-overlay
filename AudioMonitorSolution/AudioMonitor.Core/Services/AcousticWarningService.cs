@@ -1,8 +1,7 @@
 // Filepath: c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\Services\AcousticWarningService.cs
-using System;
+using AudioMonitor.Core.Logging;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
-using AudioMonitor.Core.Logging;
 
 namespace AudioMonitor.Core.Services
 {
@@ -22,7 +21,7 @@ namespace AudioMonitor.Core.Services
         {
             lock (_playbackLock)
             {
-                if (_isPlaying) 
+                if (_isPlaying)
                 {
                     // Log.Debug("AcousticWarningService: Already playing, request ignored.");
                     return; // Don't interrupt or overlap sounds
@@ -51,17 +50,17 @@ namespace AudioMonitor.Core.Services
 
                 _waveOutDevice = new WaveOutEvent
                 {
-                    DesiredLatency = 200, 
-                    NumberOfBuffers = 2, 
-                    Volume = (float)Math.Clamp(volume, 0.0, 1.0) 
+                    DesiredLatency = 200,
+                    NumberOfBuffers = 2,
+                    Volume = (float)Math.Clamp(volume, 0.0, 1.0)
                 };
-                
+
                 // var timedProvider = _sineWaveProvider.Take(TimeSpan.FromMilliseconds(durationMilliseconds)); // Replaced
                 var timedProvider = _signalGenerator.Take(TimeSpan.FromMilliseconds(durationMilliseconds)); // Added
-                
+
                 _waveOutDevice.Init(timedProvider);
 
-                _waveOutDevice.PlaybackStopped += (sender, args) => 
+                _waveOutDevice.PlaybackStopped += (sender, args) =>
                 {
                     lock (_playbackLock)
                     {

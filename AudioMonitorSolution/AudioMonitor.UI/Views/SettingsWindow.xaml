@@ -291,14 +291,9 @@
                                     </Border>
                                 </Grid>
                             </Border>
-                            
-                            <ComboBox x:Name="AudioInputComboBox" 
+                              <ComboBox x:Name="AudioInputComboBox" 
                                       Style="{StaticResource ModernComboBoxStyle}"
                                       SelectionChanged="AudioInputComboBox_SelectionChanged">
-                                <ComboBoxItem Content="Focusrite Scarlett (Standard)"/>
-                                <ComboBoxItem Content="Focusrite Scarlett (Kanal 1)"/>
-                                <ComboBoxItem Content="Focusrite Scarlett (Kanal 2)"/>
-                                <ComboBoxItem Content="Anderes Mikrofon"/>
                             </ComboBox>
                         </StackPanel>
                     </Border>

@@ -1,7 +1,5 @@
-using System;
-using System.Linq;
-using AudioMonitor.Core.Models;
 using AudioMonitor.Core.Logging;
+using AudioMonitor.Core.Models;
 
 namespace AudioMonitor.Core.Logic
 {
@@ -20,12 +18,12 @@ namespace AudioMonitor.Core.Logic
             {
                 Log.Error("LevelAnalyzer initialized with no thresholds in configuration. Behavior will be undefined.");
                 // Optionally, initialize with hardcoded defaults as a fallback, though SettingsService should handle this.
-                _config.Thresholds = new System.Collections.Generic.List<ThresholdLevel>(); 
+                _config.Thresholds = new System.Collections.Generic.List<ThresholdLevel>();
             }
             else
             {
                 // Ensure thresholds are sorted by DBFSValue in ascending order (e.g., -60, -30, -10)
-                _config.SortThresholds(); 
+                _config.SortThresholds();
             }
         }
 
@@ -51,9 +49,9 @@ namespace AudioMonitor.Core.Logic
                     return _config.Thresholds[i];
                 }
             }
-            
+
             // If below the lowest threshold (i.e., no threshold was met)
-            return null; 
+            return null;
         }
 
         /// <summary>
@@ -85,7 +83,7 @@ namespace AudioMonitor.Core.Logic
 
             // Case 3: DBFS is between two thresholds - find lower and upper
             ThresholdLevel lower = sortedThresholds[0];
-            ThresholdLevel upper = sortedThresholds[sortedThresholds.Count - 1]; 
+            ThresholdLevel upper = sortedThresholds[sortedThresholds.Count - 1];
 
             for (int i = 0; i < sortedThresholds.Count - 1; i++)
             {
@@ -96,7 +94,7 @@ namespace AudioMonitor.Core.Logic
                     break;
                 }
             }
-            
+
             // Simplified: no complex interpolation here to avoid WPF dependencies.
             // Return the color of the lower threshold in the range.
             // More sophisticated, non-WPF color interpolation could be added if needed,
@@ -104,7 +102,7 @@ namespace AudioMonitor.Core.Logic
             // For now, just return the lower bound color.
             // Or, if a very simple interpolation is desired and colors are known hex:
             // This example still leans towards returning the lower color to avoid complexity here.
-            
+
             // Basic interpolation can be attempted if colors are parseable,
             // but System.Drawing.Color is not available in .NET Standard directly without extra packages.
             // Let's return the lower.Color for simplicity in the Core library.

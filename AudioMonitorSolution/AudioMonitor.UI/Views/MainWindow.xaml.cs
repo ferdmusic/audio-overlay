@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input; // Required for MouseButtonEventArgs
 using AudioMonitor.OverlayRenderer;
@@ -324,9 +326,7 @@ namespace AudioMonitor.UI.Views
                 _myNotifyIcon.ToolTipText = "AudioMonitor (Monitoring)";
                 // TODO: Update _myNotifyIcon.IconSource for normal monitoring state (back to default)
             }
-        }
-
-        public void ShowSettings()
+        }        public void ShowSettings()
         {
             if (_audioService == null || _appSettings == null || _settingsService == null) return;
 
@@ -349,38 +349,55 @@ namespace AudioMonitor.UI.Views
                 return;
             }
 
-            _settingsWindow = new SettingsWindow(settingsCopy, _audioService); 
-
-            if (_settingsWindow.ShowDialog() == true)
+            try
             {
-                var newSettings = _settingsWindow.CurrentSettings;
-                if (newSettings == null)
-                {
-                    Core.Logging.Log.Error("SettingsWindow returned null settings after dialog confirmation.");
-                    MessageBox.Show("Failed to apply settings. Changes may not have been saved.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-                _appSettings = newSettings; 
+                _settingsWindow = new SettingsWindow(settingsCopy, _audioService); 
+            }
+            catch (Exception ex)
+            {
+                Core.Logging.Log.Error("Failed to create SettingsWindow.", ex);
+                MessageBox.Show($"Error creating settings window: {ex.Message}", "Settings Window Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
 
-                _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels); 
-
-                if (_deviceComboBox != null && (_deviceComboBox.SelectedItem == null || ((AudioDevice)_deviceComboBox.SelectedItem).Id != _appSettings.SelectedAudioDeviceId))
+            try
+            {
+                if (_settingsWindow.ShowDialog() == true)
                 {
-                     var deviceToSelect = _audioService.GetInputDevices().FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
-                     if (deviceToSelect != null)
-                     {
-                        _deviceComboBox.SelectedItem = deviceToSelect; 
-                     }
-                }
-                else if (_audioService.CurrentDeviceId != _appSettings.SelectedAudioDeviceId && !string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
-                {
-                    _audioService.StopMonitoring();
-                    _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId);
-                }
+                    var newSettings = _settingsWindow.CurrentSettings;
+                    if (newSettings == null)
+                    {
+                        Core.Logging.Log.Error("SettingsWindow returned null settings after dialog confirmation.");
+                        MessageBox.Show("Failed to apply settings. Changes may not have been saved.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+                    _appSettings = newSettings; 
 
-                UpdateOverlayLayout(); 
-                _settingsService.SaveApplicationSettings(_appSettings); 
-                AutostartService.SetAutostart(_appSettings.AutostartEnabled);
+                    _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels); 
+
+                    if (_deviceComboBox != null && (_deviceComboBox.SelectedItem == null || ((AudioDevice)_deviceComboBox.SelectedItem).Id != _appSettings.SelectedAudioDeviceId))
+                    {
+                         var deviceToSelect = _audioService.GetInputDevices().FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
+                         if (deviceToSelect != null)
+                         {
+                            _deviceComboBox.SelectedItem = deviceToSelect; 
+                         }
+                    }
+                    else if (_audioService.CurrentDeviceId != _appSettings.SelectedAudioDeviceId && !string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+                    {
+                        _audioService.StopMonitoring();
+                        _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId);
+                    }
+
+                    UpdateOverlayLayout(); 
+                    _settingsService.SaveApplicationSettings(_appSettings); 
+                    AutostartService.SetAutostart(_appSettings.AutostartEnabled);
+                }
+            }
+            catch (Exception ex)
+            {
+                Core.Logging.Log.Error("Error showing SettingsWindow dialog.", ex);
+                MessageBox.Show($"Error displaying settings dialog: {ex.Message}", "Settings Dialog Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Z3wx1Gzqkco=",
+  "dgSpecHash": "h4ANzO9oWNU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.UI\\AudioMonitor.UI.csproj",
+  "projectFilePath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.UI\\AudioMonitor.UI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ferdmusic\\.nuget\\packages\\hardcodet.notifyicon.wpf\\2.0.1\\hardcodet.notifyicon.wpf.2.0.1.nupkg.sha512",
     "C:\\Users\\Ferdmusic\\.nuget\\packages\\materialdesigncolors\\5.2.2-ci998\\materialdesigncolors.5.2.2-ci998.nupkg.sha512",

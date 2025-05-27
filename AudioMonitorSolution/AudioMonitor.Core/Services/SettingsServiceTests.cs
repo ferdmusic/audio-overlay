@@ -1,10 +1,6 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AudioMonitor.Core.Models;
 using AudioMonitor.Core.Services;
-using System;
-using System.IO;
-using System.Linq;
-using System.Text.Json; // Required for direct comparison if needed, and for JsonStringEnumConverter
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AudioMonitor.Core.Tests
 {
@@ -90,11 +86,11 @@ namespace AudioMonitor.Core.Tests
             Assert.AreEqual(defaultSettings.OverlayThickness, loadedSettings.OverlayThickness); // Changed from OverlayHeight
             Assert.AreEqual(defaultSettings.AcousticWarningEnabled, loadedSettings.AcousticWarningEnabled);
             Assert.AreEqual(defaultSettings.WarningLevels.Thresholds.Count, loadedSettings.WarningLevels.Thresholds.Count);
-            
+
             // Verify that a new default config file was created
             Assert.IsTrue(File.Exists(_testConfigFilePath!), "A new config file should have been created with default settings."); // Added null-forgiving operator
         }
-        
+
         [TestCleanup]
         public void Cleanup()
         {

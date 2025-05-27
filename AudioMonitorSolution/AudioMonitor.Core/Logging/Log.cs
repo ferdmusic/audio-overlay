@@ -12,7 +12,12 @@ namespace AudioMonitor.Core.Logging
             System.Diagnostics.Debug.WriteLine($"INFO: {message}");
         }
 
-        public static void Error(string message, System.Exception ex = null)
+        public static void Warning(string message)
+        {
+            System.Diagnostics.Debug.WriteLine($"WARNING: {message}");
+        }
+
+        public static void Error(string message, System.Exception? ex = null)
         {
             System.Diagnostics.Debug.WriteLine($"ERROR: {message}");
             if (ex != null)

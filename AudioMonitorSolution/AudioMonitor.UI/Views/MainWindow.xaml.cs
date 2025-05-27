@@ -3,101 +3,251 @@ using AudioMonitor.OverlayRenderer;
 using AudioMonitor.Core.Services;
 using AudioMonitor.Core.Logic;
 using AudioMonitor.Core.Models;
-using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Forms;
 using System.Windows.Controls;
+using AudioMonitor.UI.Views;
+using System.ComponentModel;
+using System.Runtime.InteropServices; // Required for DllImport
+using System.Windows.Interop; // Required for WindowInteropHelper
+// We might need System.Drawing if we directly use System.Drawing.Rectangle, but Screen.Bounds is already that.
 
 namespace AudioMonitor.UI.Views
 {
     public partial class MainWindow : Window
     {
+        // P/Invoke declarations for DPI awareness
+        [DllImport("user32.dll")]
+        private static extern IntPtr MonitorFromRect([In] ref RECT lprc, uint dwFlags);
+
+        [DllImport("Shcore.dll", SetLastError = true)]
+        private static extern int GetDpiForMonitor(IntPtr hmonitor, MonitorDpiType dpiType, out uint dpiX, out uint dpiY);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+
+            public RECT(System.Drawing.Rectangle r)
+            {
+                this.Left = r.Left;
+                this.Top = r.Top;
+                this.Right = r.Right;
+                this.Bottom = r.Bottom;
+            }
+        }
+
+        private enum MonitorDpiType
+        {
+            MDT_EFFECTIVE_DPI = 0,
+            MDT_ANGULAR_DPI = 1,
+            MDT_RAW_DPI = 2,
+            MDT_DEFAULT = MDT_EFFECTIVE_DPI
+        }
+
+        private const uint MONITOR_DEFAULTTONEAREST = 0x00000002;
+        private const int S_OK = 0; // HRESULT success code
+
         private List<OverlayWindow> _overlayWindows = new();
-        private AudioService _audioService;
-        private LevelAnalyzer _levelAnalyzer;
-        private SettingsService _settingsService;
-        private WarningConfiguration _config;
-        private string _selectedDeviceId;
+        private AudioService? _audioService; // Nullable
+        private LevelAnalyzer? _levelAnalyzer; // Nullable
+        private SettingsService? _settingsService; // Nullable
+        private ApplicationSettings? _appSettings; // Nullable
+        private AcousticWarningService? _acousticWarningService; // Nullable
         private bool _monitoringActive = true;
-        private ComboBox? _deviceComboBox;
+        private System.Windows.Controls.ComboBox? _deviceComboBox;
+        private SettingsWindow? _settingsWindow;
+        private bool _isExplicitClose = false; // Flag to allow explicit closing from tray
+        private Hardcodet.Wpf.TaskbarNotification.TaskbarIcon? _myNotifyIcon; // Field for the TaskbarIcon
 
         public MainWindow()
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
+            // Closing event is handled by Window_Closing method defined below
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (!_isExplicitClose)
+            {
+                e.Cancel = true; // Cancel the closing event
+                this.Hide();     // Hide the window
+                if (_myNotifyIcon != null) _myNotifyIcon.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                // Actual closing logic (save settings, dispose resources)
+                if (_settingsService != null && _appSettings != null)
+                {
+                    _settingsService.SaveApplicationSettings(_appSettings);
+                }
+                _acousticWarningService?.Dispose();
+                _audioService?.Dispose(); // Dispose AudioService
+                if (_myNotifyIcon != null) _myNotifyIcon.Dispose();
+            }
+        }
+
+        private void ShowMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            this.Show();
+            this.WindowState = WindowState.Normal;
+            this.Activate();
+        }
+
+        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            _isExplicitClose = true;
+            Application.Current.Shutdown();
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            // Retrieve the TaskbarIcon from resources
+            _myNotifyIcon = (Hardcodet.Wpf.TaskbarNotification.TaskbarIcon)this.Resources["MyNotifyIconResource"];
+
             _settingsService = new SettingsService();
-            _config = _settingsService.LoadWarningConfiguration();
-            _levelAnalyzer = new LevelAnalyzer(_config);
+            _appSettings = _settingsService.LoadApplicationSettings();
+            _acousticWarningService = new AcousticWarningService(); 
+
+            if (_appSettings == null) // Should not happen if GetDefault works
+            {
+                MessageBox.Show("Failed to load application settings. Application might not work correctly.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Consider closing or using hardcoded defaults
+                _appSettings = ApplicationSettings.GetDefault(); 
+            }
+
+            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
             _audioService = new AudioService();
             var devices = _audioService.GetInputDevices();
 
-            // Device-Auswahl-ComboBox (UI minimal)
-            _deviceComboBox = new ComboBox { Width = 400, Margin = new Thickness(10) };
+            _deviceComboBox = DeviceComboBox;
+            _deviceComboBox.Items.Clear();
             foreach (var dev in devices)
                 _deviceComboBox.Items.Add(dev);
             _deviceComboBox.SelectionChanged += DeviceComboBox_SelectionChanged;
-            _deviceComboBox.SelectedIndex = devices.FindIndex(d => d.IsFocusrite) >= 0 ? devices.FindIndex(d => d.IsFocusrite) : 0;
-            (this.Content as Grid)?.Children.Add(_deviceComboBox);
 
-            _selectedDeviceId = (devices.Count > 0) ? devices[_deviceComboBox.SelectedIndex].Id : null;
-            if (_selectedDeviceId != null)
-                _audioService.StartMonitoring(_selectedDeviceId);
+            if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+            {
+                var selectedDevice = devices.FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
+                if (selectedDevice != null)
+                {
+                    _deviceComboBox.SelectedItem = selectedDevice;
+                }
+                else if (devices.Any()) // Fallback if saved device not found
+                {
+                    _deviceComboBox.SelectedIndex = 0;
+                     _appSettings.SelectedAudioDeviceId = devices[0].Id; // Update settings
+                }
+            }
+            else if (devices.Any()) // No device saved, select first one
+            {
+                 _deviceComboBox.SelectedIndex = 0;
+                 _appSettings.SelectedAudioDeviceId = devices[0].Id; // Update settings
+            }
+            
+            // Auto-select Focusrite if no device is pre-selected or if the pre-selected is not Focusrite but one exists
+            var focusriteDevice = devices.FirstOrDefault(d => d.IsFocusrite);
+            if (focusriteDevice != null && (_deviceComboBox.SelectedItem == null || !((AudioDevice)_deviceComboBox.SelectedItem).IsFocusrite))
+            {
+                _deviceComboBox.SelectedItem = focusriteDevice;
+                _appSettings.SelectedAudioDeviceId = focusriteDevice.Id;
+            }
+
+
+            if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+            {
+                _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId);
+            }
             _audioService.LevelChanged += AudioService_LevelChanged;
 
-            // Multi-Monitor Overlay
+            InitializeOverlays();
+            UpdateMonitoringStatusInApp(); // Notify App about initial status
+        }
+
+        private void InitializeOverlays()
+        {
+            // Clear existing overlays if any (e.g., on settings change)
+            foreach (var overlay in _overlayWindows)
+            {
+                overlay.Close();
+            }
+            _overlayWindows.Clear();
+
+            // Use System.Windows.Forms.Screen fully qualified
             foreach (var screen in System.Windows.Forms.Screen.AllScreens)
             {
                 var overlay = new OverlayWindow();
-                overlay.SetOverlayPositionAndSize(new System.Windows.Rect(
-                    screen.Bounds.Left,
-                    screen.Bounds.Top,
-                    screen.Bounds.Width,
-                    10 // Streifenhöhe, später konfigurierbar
-                ));
+                // Set initial position and size based on _appSettings
+                // The actual positioning logic will be in UpdateOverlayLayout, called by this method
+                _overlayWindows.Add(overlay); 
                 overlay.Show();
-                _overlayWindows.Add(overlay);
             }
+            UpdateOverlayLayout(); // Apply layout based on current settings
         }
+
 
         private void DeviceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_deviceComboBox?.SelectedItem is AudioMonitor.Core.Services.AudioDevice dev)
             {
-                _audioService.StopMonitoring();
-                _selectedDeviceId = dev.Id;
-                _audioService.StartMonitoring(_selectedDeviceId);
+                if (dev.Id != _appSettings?.SelectedAudioDeviceId) // Null check for _appSettings
+                {
+                    _audioService?.StopMonitoring(); // Null check
+                    if (_appSettings != null) _appSettings.SelectedAudioDeviceId = dev.Id; // Null check
+                    _audioService?.StartMonitoring(dev.Id); // Null check
+                    if (_settingsService != null && _appSettings != null) _settingsService.SaveApplicationSettings(_appSettings);
+                }
             }
         }
 
-        private void AudioService_LevelChanged(object sender, double dbfs)
+        private void AudioService_LevelChanged(object? sender, double dbfs) // sender is nullable
         {
+            if (!_monitoringActive || _levelAnalyzer == null || _appSettings == null) return; // Null checks
+
             var colorHex = _levelAnalyzer.GetInterpolatedColor(dbfs);
             var color = OverlayColorHelper.FromHex(colorHex);
             double opacity = CalculateOpacity(dbfs);
             bool isCritical = IsCritical(dbfs);
+            
+            if (_appSettings.AcousticWarningEnabled && isCritical) 
+            {                                                        
+                _acousticWarningService?.PlayWarningSound(_appSettings.AcousticWarningVolume); // Null check
+            }                                                        
+
             Dispatcher.Invoke(() =>
             {
                 foreach (var overlay in _overlayWindows)
                     overlay.SetOverlayColor(color, opacity, isCritical);
+                
+                // Update tray icon directly
+                UpdateTaskbarIconState(_monitoringActive, isCritical);
             });
         }
 
         private double CalculateOpacity(double dbfs)
         {
-            // -18 dBFS = fast unsichtbar, 0 dBFS = voll sichtbar
-            double min = -18, max = 0;
-            double norm = Math.Clamp((dbfs - min) / (max - min), 0, 1);
-            return 0.1 + norm * 0.9; // 0.1 bis 1.0
+            if (_appSettings == null) return 0.1; // Default low opacity if settings not loaded
+            var safeThreshold = _appSettings.WarningLevels.Thresholds.OrderBy(t => t.DBFSValue).FirstOrDefault()?.DBFSValue ?? -18;
+            var criticalThreshold = _appSettings.WarningLevels.Thresholds.OrderByDescending(t => t.DBFSValue).FirstOrDefault()?.DBFSValue ?? 0;
+            
+            double min = safeThreshold; // Pegel, bei dem es fast transparent ist
+            double max = criticalThreshold; // Pegel, bei dem es voll sichtbar ist
+
+            if (dbfs <= min) return 0.1; // Nahezu transparent
+            if (dbfs >= max) return 1.0; // Voll sichtbar
+
+            double norm = (dbfs - min) / (max - min);
+            return Math.Clamp(0.1 + norm * 0.9, 0.1, 1.0); // Skaliert von 0.1 bis 1.0
         }
 
         private bool IsCritical(double dbfs)
         {
-            var crit = _config.Thresholds.LastOrDefault();
-            return crit != null && dbfs >= crit.DBFSValue;
+            if (_appSettings == null) return false; // Not critical if settings not loaded
+            var criticalThreshold = _appSettings.WarningLevels.Thresholds.LastOrDefault();
+            return criticalThreshold != null && dbfs >= criticalThreshold.DBFSValue;
         }
 
         public void ToggleMonitoring()
@@ -105,13 +255,178 @@ namespace AudioMonitor.UI.Views
             _monitoringActive = !_monitoringActive;
             if (_monitoringActive)
             {
-                if (_selectedDeviceId != null)
-                    _audioService.StartMonitoring(_selectedDeviceId);
+                if (_appSettings != null && !string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId)) // Null check
+                    _audioService?.StartMonitoring(_appSettings.SelectedAudioDeviceId); // Null check
             }
             else
             {
-                _audioService.StopMonitoring();
+                _audioService?.StopMonitoring(); // Null check
+                // Optionally, hide overlays or set to a neutral state (e.g., transparent black)
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (var overlay in _overlayWindows)
+                        overlay.SetOverlayColor(System.Windows.Media.Colors.Transparent, 0, false); // Or some neutral state
+                });
+            }
+            UpdateMonitoringStatusInApp();
+        }
+
+        private void UpdateMonitoringStatusInApp()
+        {
+            // For tray icon status, we need to know if current level is critical when monitoring is active.
+            // This is a simplification; ideally, the critical status comes from AudioService_LevelChanged.
+            // For now, just pass false for isCritical when toggling, actual critical status is updated by LevelChanged.
+            bool isCurrentlyCritical = false; 
+            if(_monitoringActive && _audioService != null) {
+                // This is a snapshot, actual critical status is event-driven by AudioService_LevelChanged
+                // isCurrentlyCritical = IsCritical(_audioService.CurrentDBFSLevel); 
+            }
+            UpdateTaskbarIconState(_monitoringActive, isCurrentlyCritical); 
+        }
+
+        private void UpdateTaskbarIconState(bool isMonitoring, bool isCritical)
+        {
+            if (_myNotifyIcon == null) return;
+
+            if (!isMonitoring)
+            {
+                _myNotifyIcon.ToolTipText = "AudioMonitor (Paused)";
+                // TODO: Update _myNotifyIcon.IconSource for paused state if a specific icon is available
+                // Example: _myNotifyIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/YourAppAssemblyName;component/Resources/icon_paused.ico"));
+            }
+            else if (isCritical)
+            {
+                _myNotifyIcon.ToolTipText = "AudioMonitor (CRITICAL!)";
+                // TODO: Update _myNotifyIcon.IconSource for critical state
+            }
+            else
+            {
+                _myNotifyIcon.ToolTipText = "AudioMonitor (Monitoring)";
+                // TODO: Update _myNotifyIcon.IconSource for normal monitoring state (back to default)
             }
         }
+
+        public void ShowSettings()
+        {
+            if (_audioService == null || _appSettings == null || _settingsService == null) return;
+
+            ApplicationSettings? settingsCopy = null;
+            try
+            {
+                 settingsCopy = System.Text.Json.JsonSerializer.Deserialize<ApplicationSettings>(System.Text.Json.JsonSerializer.Serialize(_appSettings));
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                Core.Logging.Log.Error("Failed to clone application settings for SettingsWindow.", ex);
+                MessageBox.Show("Error preparing settings. Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (settingsCopy == null)
+            {
+                Core.Logging.Log.Error("Failed to clone application settings (result was null).");
+                MessageBox.Show("Error preparing settings. Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            _settingsWindow = new SettingsWindow(settingsCopy, _audioService); 
+
+            if (_settingsWindow.ShowDialog() == true)
+            {
+                var newSettings = _settingsWindow.CurrentSettings;
+                if (newSettings == null)
+                {
+                    Core.Logging.Log.Error("SettingsWindow returned null settings after dialog confirmation.");
+                    MessageBox.Show("Failed to apply settings. Changes may not have been saved.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                _appSettings = newSettings; 
+
+                _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels); 
+
+                if (_deviceComboBox != null && (_deviceComboBox.SelectedItem == null || ((AudioDevice)_deviceComboBox.SelectedItem).Id != _appSettings.SelectedAudioDeviceId))
+                {
+                     var deviceToSelect = _audioService.GetInputDevices().FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
+                     if (deviceToSelect != null)
+                     {
+                        _deviceComboBox.SelectedItem = deviceToSelect; 
+                     }
+                }
+                else if (_audioService.CurrentDeviceId != _appSettings.SelectedAudioDeviceId && !string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+                {
+                    _audioService.StopMonitoring();
+                    _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId);
+                }
+
+                UpdateOverlayLayout(); 
+                _settingsService.SaveApplicationSettings(_appSettings); 
+            }
+        }
+
+        private void UpdateOverlayLayout()
+        {
+            if (_overlayWindows == null || !_overlayWindows.Any() || _appSettings == null) return;
+
+            var overlayHeightSettingDips = (double)_appSettings.OverlayHeight; // Assuming OverlayHeight is in DIPs
+            var overlayPosition = _appSettings.OverlayPosition;
+
+            var screens = System.Windows.Forms.Screen.AllScreens;
+
+            for (int i = 0; i < Math.Min(_overlayWindows.Count, screens.Length); i++)
+            {
+                var overlay = _overlayWindows[i];
+                var screen = screens[i];
+                var screenBoundsPhysical = screen.Bounds; // System.Drawing.Rectangle (physical pixels)
+
+                RECT screenRectPhysical = new RECT(screenBoundsPhysical);
+                IntPtr hMonitor = MonitorFromRect(ref screenRectPhysical, MONITOR_DEFAULTTONEAREST);
+
+                uint dpiX = 96; // Default DPI
+                uint dpiY = 96; // Default DPI
+
+                if (GetDpiForMonitor(hMonitor, MonitorDpiType.MDT_EFFECTIVE_DPI, out uint monitorDpiX, out uint monitorDpiY) == S_OK)
+                {
+                    dpiX = monitorDpiX;
+                    dpiY = monitorDpiY;
+                }
+                else
+                {
+                    // Fallback or log error if GetDpiForMonitor fails
+                    // For simplicity, we'll use default 96 DPI if call fails
+                    Core.Logging.Log.Warning($"Failed to get DPI for monitor {screen.DeviceName}. Using default 96 DPI.");
+                }
+
+                double scaleX = dpiX / 96.0;
+                double scaleY = dpiY / 96.0;
+
+                // Convert physical screen bounds to DIPs
+                double dipLeft = screenBoundsPhysical.Left / scaleX;
+                double dipTop = screenBoundsPhysical.Top / scaleY;
+                double dipWidth = screenBoundsPhysical.Width / scaleX;
+                double dipHeight = screenBoundsPhysical.Height / scaleY;
+
+                System.Windows.Rect newRectInDips = new System.Windows.Rect();
+
+                switch (overlayPosition)
+                {
+                    case OverlayEdge.Top:
+                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop, dipWidth, overlayHeightSettingDips);
+                        break;
+                    case OverlayEdge.Bottom:
+                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop + dipHeight - overlayHeightSettingDips, dipWidth, overlayHeightSettingDips);
+                        break;
+                    case OverlayEdge.Left:
+                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop, overlayHeightSettingDips, dipHeight);
+                        break;
+                    case OverlayEdge.Right:
+                        newRectInDips = new System.Windows.Rect(dipLeft + dipWidth - overlayHeightSettingDips, dipTop, overlayHeightSettingDips, dipHeight);
+                        break;
+                }
+                overlay.SetOverlayPositionAndSize(newRectInDips);
+            }
+        }
+        
+        // Ensure App.xaml.cs handles tray icon interactions (ShowSettings, ToggleMonitoring, Exit)
+        // and potentially updates the tray icon based on monitoring status or critical levels.
     }
 }

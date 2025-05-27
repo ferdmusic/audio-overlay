@@ -1,20 +1,28 @@
 {
-  "Thresholds": [
-    {
-      "Name": "Sicher",
-      "DBFSValue": -18,
-      "Color": "#00FF00"
-    },
-    {
-      "Name": "Achtung",
-      "DBFSValue": -9,
-      "Color": "#FFFF00"
-    },
-    {
-      "Name": "Kritisch",
-      "DBFSValue": -3,
-      "Color": "#FF0000"
-    }
-  ],
-  "UseDefaultColorGradient": true
+  "SelectedAudioDeviceId": "{0.0.1.00000000}.{e26b8b83-bef7-4e7d-bfbf-4a571e59e136}",
+  "OverlayPosition": "left",
+  "OverlayHeight": 10,
+  "AcousticWarningEnabled": false,
+  "AcousticWarningVolume": 0.75,
+  "AutostartEnabled": false,
+  "WarningLevels": {
+    "Thresholds": [
+      {
+        "Name": "Safe",
+        "DBFSValue": -18,
+        "Color": "#00FF00"
+      },
+      {
+        "Name": "Caution",
+        "DBFSValue": -9,
+        "Color": "#FFFF00"
+      },
+      {
+        "Name": "Critical",
+        "DBFSValue": -3,
+        "Color": "#FF0000"
+      }
+    ],
+    "UseDefaultColorGradient": true
+  }
 }

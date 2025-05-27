@@ -26,7 +26,7 @@ namespace AudioMonitor.Core.Services
                 WriteIndented = true,
                 PropertyNameCaseInsensitive = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) } // Optional: for enum handling if any
+                Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
             };
             
             try
@@ -40,97 +40,86 @@ namespace AudioMonitor.Core.Services
             catch (Exception ex)
             {
                 Log.Error($"Error creating configuration directory at {ConfigDirectory}.", ex);
-                // Depending on the desired robustness, you might want to throw or handle this more gracefully.
             }
             Log.Info($"Configuration file path set to: {ConfigFilePath}");
         }
 
-        public WarningConfiguration LoadWarningConfiguration()
+        public ApplicationSettings LoadApplicationSettings()
         {
             try
             {
                 if (File.Exists(ConfigFilePath))
                 {
-                    Log.Info($"Loading warning configuration from {ConfigFilePath}");
+                    Log.Info($"Loading application settings from {ConfigFilePath}");
                     string json = File.ReadAllText(ConfigFilePath);
-                    var config = JsonSerializer.Deserialize<WarningConfiguration>(json, _jsonOptions);
+                    var settings = JsonSerializer.Deserialize<ApplicationSettings>(json, _jsonOptions);
                     
-                    if (config != null)
+                    if (settings != null)
                     {
-                        if (config.Thresholds == null || !config.Thresholds.Any())
+                        if (settings.WarningLevels == null || settings.WarningLevels.Thresholds == null || !settings.WarningLevels.Thresholds.Any())
                         {
-                            Log.Info("Loaded configuration has no thresholds or thresholds list is null. Applying defaults.");
-                            config = GetDefaultWarningConfiguration();
-                            SaveWarningConfiguration(config); // Save defaults back immediately
+                            Log.Info("Loaded settings have no warning levels or thresholds. Applying defaults for warning levels.");
+                            settings.WarningLevels = WarningConfiguration.GetDefault();
+                            // No need to save here, let the caller decide or save when settings are modified.
                         }
                         else
                         {
-                           config.SortThresholds(); // Ensure they are sorted upon loading
-                           Log.Info($"Successfully loaded {config.Thresholds.Count} thresholds.");
+                           settings.WarningLevels.SortThresholds(); // Ensure they are sorted upon loading
+                           Log.Info($"Successfully loaded {settings.WarningLevels.Thresholds.Count} thresholds.");
                         }
-                        return config;
+                        return settings;
                     }
-                    Log.Error($"Failed to deserialize warning configuration from {ConfigFilePath}. File content might be invalid. Using defaults.");
+                    Log.Error($"Failed to deserialize application settings from {ConfigFilePath}. File content might be invalid. Using defaults.");
                 }
                 else
                 {
-                    Log.Info($"Configuration file not found at {ConfigFilePath}. Creating and saving default configuration.");
+                    Log.Info($"Configuration file not found at {ConfigFilePath}. Creating and saving default settings.");
                 }
             }
             catch (JsonException jsonEx)
             {
-                 Log.Error($"JSON deserialization error loading warning configuration from {ConfigFilePath}. Details: {jsonEx.Message}. Using defaults.", jsonEx);
+                 Log.Error($"JSON deserialization error loading application settings from {ConfigFilePath}. Details: {jsonEx.Message}. Using defaults.", jsonEx);
             }
             catch (Exception ex)
             {
-                Log.Error($"General error loading warning configuration from {ConfigFilePath}. Using defaults.", ex);
+                Log.Error($"General error loading application settings from {ConfigFilePath}. Using defaults.", ex);
             }
 
-            // If any error occurs or file doesn't exist, create, save, and return default configuration.
-            var defaultConfig = GetDefaultWarningConfiguration();
-            SaveWarningConfiguration(defaultConfig); 
-            return defaultConfig;
+            // If any error occurs or file doesn't exist, create, save, and return default settings.
+            var defaultSettings = ApplicationSettings.GetDefault();
+            SaveApplicationSettings(defaultSettings); 
+            return defaultSettings;
         }
 
-        public void SaveWarningConfiguration(WarningConfiguration config)
+        public void SaveApplicationSettings(ApplicationSettings settings)
         {
-            if (config == null)
+            if (settings == null)
             {
-                Log.Error("Attempted to save a null warning configuration. Operation aborted.");
+                Log.Error("Attempted to save null application settings. Operation aborted.");
                 return;
             }
+            if (settings.WarningLevels == null)
+            {
+                Log.Warning("ApplicationSettings.WarningLevels is null. Initializing with default warning levels before saving.");
+                settings.WarningLevels = WarningConfiguration.GetDefault();
+            }
+            settings.WarningLevels.SortThresholds(); // Ensure thresholds are sorted before saving
 
             try
             {
-                config.SortThresholds(); // Ensure thresholds are sorted before saving
-                string json = JsonSerializer.Serialize(config, _jsonOptions);
+                Log.Info($"Saving application settings to {ConfigFilePath}");
+                string json = JsonSerializer.Serialize(settings, _jsonOptions);
                 File.WriteAllText(ConfigFilePath, json);
-                Log.Info($"Warning configuration saved to {ConfigFilePath} with {config.Thresholds.Count} thresholds.");
+                Log.Info("Application settings saved successfully.");
+            }
+            catch (JsonException jsonEx)
+            {
+                Log.Error($"JSON serialization error saving application settings to {ConfigFilePath}. Details: {jsonEx.Message}.", jsonEx);
             }
             catch (Exception ex)
             {
-                Log.Error($"Error saving warning configuration to {ConfigFilePath}.", ex);
+                Log.Error($"General error saving application settings to {ConfigFilePath}.", ex);
             }
-        }
-
-        public WarningConfiguration GetDefaultWarningConfiguration()
-        {
-            Log.Info("Generating default warning configuration.");
-            var config = new WarningConfiguration
-            {
-                UseDefaultColorGradient = true, 
-                Thresholds = new List<ThresholdLevel>
-                {
-                    // Standard order: Quieter (more negative dBFS) to Louder
-                    new ThresholdLevel("Sicher", -18.0, "#00FF00"), // Green
-                    new ThresholdLevel("Achtung", -9.0, "#FFFF00"), // Yellow
-                    new ThresholdLevel("Kritisch", -3.0, "#FF0000")  // Red
-                }
-            };
-            // The SortThresholds method will be called before saving or after loading,
-            // so explicitly calling it here is good for ensuring consistency if this method is used elsewhere.
-            config.SortThresholds(); 
-            return config;
         }
     }
 }

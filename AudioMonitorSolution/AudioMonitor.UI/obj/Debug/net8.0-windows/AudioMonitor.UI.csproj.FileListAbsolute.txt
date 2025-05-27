@@ -31,3 +31,11 @@ C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMoni
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\AudioMonitor.UI.pdb
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\AudioMonitor.UI.genruntimeconfig.cache
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\ref\AudioMonitor.UI.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\Views\SettingsWindow.baml
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\Views\SettingsWindow.g.cs
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\MaterialDesignColors.dll
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\MaterialDesignThemes.Wpf.dll
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\AudioMonitor.UI_MarkupCompile.lref
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\App.baml
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\Hardcodet.NotifyIcon.Wpf.dll

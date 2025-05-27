@@ -9,10 +9,40 @@
       "AudioMonitor.UI/1.0.0": {
         "dependencies": {
           "AudioMonitor.Core": "1.0.0",
-          "AudioMonitor.OverlayRenderer": "1.0.0"
+          "AudioMonitor.OverlayRenderer": "1.0.0",
+          "Hardcodet.NotifyIcon.Wpf": "2.0.1",
+          "MaterialDesignThemes": "5.2.2-ci998"
         },
         "runtime": {
           "AudioMonitor.UI.dll": {}
+        }
+      },
+      "Hardcodet.NotifyIcon.Wpf/2.0.1": {
+        "runtime": {
+          "lib/net8.0-windows7.0/Hardcodet.NotifyIcon.Wpf.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.1.2717"
+          }
+        }
+      },
+      "MaterialDesignColors/5.2.2-ci998": {
+        "runtime": {
+          "lib/net8.0/MaterialDesignColors.dll": {
+            "assemblyVersion": "5.2.2.0",
+            "fileVersion": "5.2.2.0"
+          }
+        }
+      },
+      "MaterialDesignThemes/5.2.2-ci998": {
+        "dependencies": {
+          "MaterialDesignColors": "5.2.2-ci998",
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.39"
+        },
+        "runtime": {
+          "lib/net8.0/MaterialDesignThemes.Wpf.dll": {
+            "assemblyVersion": "5.2.2.0",
+            "fileVersion": "5.2.2.0"
+          }
         }
       },
       "Microsoft.NETCore.Platforms/3.1.0": {},
@@ -20,6 +50,14 @@
         "dependencies": {
           "System.Security.AccessControl": "4.7.0",
           "System.Security.Principal.Windows": "4.7.0"
+        }
+      },
+      "Microsoft.Xaml.Behaviors.Wpf/1.1.39": {
+        "runtime": {
+          "lib/net5.0-windows7.0/Microsoft.Xaml.Behaviors.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.39.4716"
+          }
         }
       },
       "NAudio/2.2.1": {
@@ -137,6 +175,27 @@
       "serviceable": false,
       "sha512": ""
     },
+    "Hardcodet.NotifyIcon.Wpf/2.0.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dtxmeZXzV2GzSm91aZ3hqzgoeVoARSkDPVCYfhVUNyyKBWYxMgNC0EcLiSYxD4Uc4alq/2qb3SmV8DgAENLRLQ==",
+      "path": "hardcodet.notifyicon.wpf/2.0.1",
+      "hashPath": "hardcodet.notifyicon.wpf.2.0.1.nupkg.sha512"
+    },
+    "MaterialDesignColors/5.2.2-ci998": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-GOcZo90EPpnmiUbUOxmC70CiOmIbEN6GpGZkCMHYFpll9lW0aEhOWYVblCJcz9n7VQ2iCwVTIRLVWmaVJXneHQ==",
+      "path": "materialdesigncolors/5.2.2-ci998",
+      "hashPath": "materialdesigncolors.5.2.2-ci998.nupkg.sha512"
+    },
+    "MaterialDesignThemes/5.2.2-ci998": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-91ipMgC/FhWIZIx1P2IUHWLLIdRO29+HekEn7EZY9VV6RWhZEMc7iktjKF8mF3yYkPWLXfTGufqrrAR+INdONA==",
+      "path": "materialdesignthemes/5.2.2-ci998",
+      "hashPath": "materialdesignthemes.5.2.2-ci998.nupkg.sha512"
+    },
     "Microsoft.NETCore.Platforms/3.1.0": {
       "type": "package",
       "serviceable": true,
@@ -150,6 +209,13 @@
       "sha512": "sha512-KSrRMb5vNi0CWSGG1++id2ZOs/1QhRqROt+qgbEAdQuGjGrFcl4AOl4/exGPUYz2wUnU42nvJqon1T3U0kPXLA==",
       "path": "microsoft.win32.registry/4.7.0",
       "hashPath": "microsoft.win32.registry.4.7.0.nupkg.sha512"
+    },
+    "Microsoft.Xaml.Behaviors.Wpf/1.1.39": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8PZKqw9QOcu42xk8puY4P1+EXHL9YGOR9b7qhaYx5cILHul456H073tj99vyPcCt0W0781T9RwHqkx507ZyUpQ==",
+      "path": "microsoft.xaml.behaviors.wpf/1.1.39",
+      "hashPath": "microsoft.xaml.behaviors.wpf.1.1.39.nupkg.sha512"
     },
     "NAudio/2.2.1": {
       "type": "package",

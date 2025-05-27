@@ -23,10 +23,12 @@ namespace AudioMonitor.Core.Services
 
     public class AudioService : IDisposable
     {
-        private WasapiCapture _capture;
-        private string _monitoringDeviceId;
+        private WasapiCapture? _capture; // Made nullable
+        private string? _monitoringDeviceId; // Made nullable
 
-        public event EventHandler<double> LevelChanged;
+        public string? CurrentDeviceId => _monitoringDeviceId; // Added public getter
+
+        public event EventHandler<double>? LevelChanged; // Made nullable
         public double CurrentDBFSLevel { get; private set; } = -96.0; // Default to a low value, representing silence
 
         public List<AudioDevice> GetInputDevices()
@@ -170,7 +172,7 @@ namespace AudioMonitor.Core.Services
             }
         }
 
-        private void OnDataAvailable(object sender, WaveInEventArgs e)
+        private void OnDataAvailable(object? sender, WaveInEventArgs e) // sender made nullable
         {
             if (e.BytesRecorded == 0)
             {
@@ -207,7 +209,7 @@ namespace AudioMonitor.Core.Services
             // Log.Debug($"Current dBFS: {CurrentDBFSLevel:F2} (Peak Sample: {maxSample:F4})"); // Can be very noisy
         }
 
-        private void OnRecordingStopped(object sender, StoppedEventArgs e)
+        private void OnRecordingStopped(object? sender, StoppedEventArgs e) // sender made nullable
         {
             Log.Info($"Monitoring stopped for device ID: {_monitoringDeviceId}.");
             if (e.Exception != null)

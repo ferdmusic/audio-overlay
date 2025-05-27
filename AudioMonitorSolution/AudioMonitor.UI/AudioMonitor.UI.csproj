@@ -10,4 +10,12 @@
     <ProjectReference Include="../AudioMonitor.Core/AudioMonitor.Core.csproj" />
     <ProjectReference Include="../AudioMonitor.OverlayRenderer/AudioMonitor.OverlayRenderer.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="2.0.1" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.2.2-ci998" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="image.ico" />
+    <Resource Include="image.ico" />
+  </ItemGroup>
 </Project>

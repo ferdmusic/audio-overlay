@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AudioMonitor.OverlayRenderer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8af00745cb61c60be9429041399b91504fcc58c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7099216db75d60e62818db6337b23c7d1c82c9af")]
 [assembly: System.Reflection.AssemblyProductAttribute("AudioMonitor.OverlayRenderer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AudioMonitor.OverlayRenderer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

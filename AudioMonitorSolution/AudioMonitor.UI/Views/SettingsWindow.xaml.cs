@@ -6,6 +6,8 @@ using AudioMonitor.Core.Models; // Required for ApplicationSettings, ThresholdLe
 using System.Linq;
 using System.Collections.Generic; // Required for List<T>
 using System.Collections.ObjectModel; // Required for ObservableCollection
+using System.Windows.Data; // Required for CollectionViewSource
+using System.Globalization;
 
 namespace AudioMonitor.UI.Views
 {
@@ -19,19 +21,33 @@ namespace AudioMonitor.UI.Views
                 InitializeComponent();
 
                 _audioService = audioService;
-                CurrentSettings = settings;
+                CurrentSettings = settings;                // Populate Audio Input ComboBox with grouped devices
+                var deviceGroups = _audioService.GetGroupedInputDevices();
+                
+                // Create a flat collection for the ComboBox while maintaining grouping info
+                var flatDevices = new ObservableCollection<AudioDevice>();
+                foreach (var group in deviceGroups)
+                {
+                    foreach (var device in group.Devices)
+                    {
+                        flatDevices.Add(device);
+                    }
+                }
 
-                // Populate Audio Input ComboBox
-                var devices = _audioService.GetInputDevices();
-                AudioInputComboBox.Items.Clear(); // Add this line
-                AudioInputComboBox.ItemsSource = devices;
+                // Set up CollectionViewSource for grouping
+                var cvs = new CollectionViewSource { Source = flatDevices };
+                cvs.GroupDescriptions.Add(new PropertyGroupDescription("DeviceType"));
+                
+                AudioInputComboBox.Items.Clear();
+                AudioInputComboBox.ItemsSource = cvs.View;
+                
                 if (!string.IsNullOrEmpty(CurrentSettings.SelectedAudioDeviceId))
                 {
-                    var selectedDev = devices.FirstOrDefault(d => d.Id == CurrentSettings.SelectedAudioDeviceId);
+                    var selectedDev = flatDevices.FirstOrDefault(d => d.Id == CurrentSettings.SelectedAudioDeviceId);
                     if (selectedDev != null) AudioInputComboBox.SelectedItem = selectedDev;
-                    else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
+                    else if (flatDevices.Any()) AudioInputComboBox.SelectedIndex = 0;
                 }
-                else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
+                else if (flatDevices.Any()) AudioInputComboBox.SelectedIndex = 0;
 
                 // Populate Overlay Position ComboBox
                 OverlayPositionComboBox.Items.Clear(); // Add this line
@@ -96,13 +112,9 @@ namespace AudioMonitor.UI.Views
             // Actual monitoring start logic would be handled by the main application controller/viewmodel after settings are saved and this window closes.
             // For now, this button primarily ensures settings are saved before the user expects monitoring to reflect new settings.
             System.Windows.MessageBox.Show("Monitoring will start with the new settings after this window is closed.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void MinimizeToTray_Click(object sender, RoutedEventArgs e)
+        }        private void MinimizeToTray_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Minimize to Tray Clicked (Not Implemented)", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-            // this.WindowState = WindowState.Minimized; 
-            // this.Hide(); 
+            this.Hide();
         }
 
         private void AcousticVolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -121,6 +133,28 @@ namespace AudioMonitor.UI.Views
         private void AudioInputComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Handle selection change if needed, e.g., update a live preview or validate selection.
+        }
+    }
+
+    public class DeviceTypeGroupConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is AudioDeviceType deviceType)
+            {
+                return deviceType switch
+                {
+                    AudioDeviceType.WASAPI => "WASAPI Devices",
+                    AudioDeviceType.ASIO => "ASIO Devices",
+                    _ => "Other Devices"
+                };
+            }
+            return "Unknown";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

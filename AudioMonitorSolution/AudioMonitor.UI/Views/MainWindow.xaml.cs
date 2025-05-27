@@ -13,6 +13,9 @@ using System.ComponentModel;
 using System.Runtime.InteropServices; // Required for DllImport
 using System.Windows.Interop; // Required for WindowInteropHelper
 using AudioMonitor.UI.Services;
+using System.Windows.Data;
+using System.Collections.ObjectModel;
+using System.Globalization;
 // We might need System.Drawing if we directly use System.Drawing.Rectangle, but Screen.Bounds is already that.
 
 namespace AudioMonitor.UI.Views
@@ -99,9 +102,7 @@ namespace AudioMonitor.UI.Views
             this.Show();
             this.WindowState = WindowState.Normal;
             this.Activate();
-        }
-
-        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
+        }        private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
             _isExplicitClose = true;
             // Dispose the TaskbarIcon before shutting down
@@ -111,6 +112,12 @@ namespace AudioMonitor.UI.Views
                 _myNotifyIcon = null; // Set to null to prevent further access
             }
             Application.Current.Shutdown();
+        }
+
+        private void MinimizeToTray_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            if (_myNotifyIcon != null) _myNotifyIcon.Visibility = Visibility.Visible;
         }
 
         private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
@@ -132,39 +139,49 @@ namespace AudioMonitor.UI.Views
                 MessageBox.Show("Failed to load application settings. Application might not work correctly.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 // Consider closing or using hardcoded defaults
                 _appSettings = ApplicationSettings.GetDefault(); 
-            }
-
-            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
+            }            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
             _audioService = new AudioService();
-            var devices = _audioService.GetInputDevices();
+            var groupedDevices = _audioService.GetGroupedInputDevices();
 
             _deviceComboBox = DeviceComboBox;
-            _deviceComboBox.Items.Clear();
-            foreach (var dev in devices)
-                _deviceComboBox.Items.Add(dev);
-            _deviceComboBox.SelectionChanged += DeviceComboBox_SelectionChanged;
-
-            if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+            
+            // Create CollectionViewSource for grouping
+            var collectionViewSource = new CollectionViewSource();
+            var allDevices = new ObservableCollection<AudioDevice>();
+            
+            // Add all devices from groups to the collection
+            foreach (var group in groupedDevices)
             {
-                var selectedDevice = devices.FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
+                foreach (var device in group.Devices)
+                {
+                    allDevices.Add(device);
+                }
+            }
+            
+            collectionViewSource.Source = allDevices;
+            collectionViewSource.GroupDescriptions.Add(new PropertyGroupDescription("DeviceType"));
+            _deviceComboBox.ItemsSource = collectionViewSource.View;
+            _deviceComboBox.SelectionChanged += DeviceComboBox_SelectionChanged;            if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
+            {
+                var selectedDevice = allDevices.FirstOrDefault(d => d.Id == _appSettings.SelectedAudioDeviceId);
                 if (selectedDevice != null)
                 {
                     _deviceComboBox.SelectedItem = selectedDevice;
                 }
-                else if (devices.Any()) // Fallback if saved device not found
+                else if (allDevices.Any()) // Fallback if saved device not found
                 {
                     _deviceComboBox.SelectedIndex = 0;
-                     _appSettings.SelectedAudioDeviceId = devices[0].Id; // Update settings
+                     _appSettings.SelectedAudioDeviceId = allDevices[0].Id; // Update settings
                 }
             }
-            else if (devices.Any()) // No device saved, select first one
+            else if (allDevices.Any()) // No device saved, select first one
             {
                  _deviceComboBox.SelectedIndex = 0;
-                 _appSettings.SelectedAudioDeviceId = devices[0].Id; // Update settings
+                 _appSettings.SelectedAudioDeviceId = allDevices[0].Id; // Update settings
             }
             
             // Auto-select Focusrite if no device is pre-selected or if the pre-selected is not Focusrite but one exists
-            var focusriteDevice = devices.FirstOrDefault(d => d.IsFocusrite);
+            var focusriteDevice = allDevices.FirstOrDefault(d => d.IsFocusrite);
             if (focusriteDevice != null && (_deviceComboBox.SelectedItem == null || !((AudioDevice)_deviceComboBox.SelectedItem).IsFocusrite))
             {
                 _deviceComboBox.SelectedItem = focusriteDevice;

@@ -1,4 +1,4 @@
-C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.deps.json
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.deps.json
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.pdb
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\OverlayWindow.baml
@@ -13,4 +13,4 @@ C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMoni
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\refint\AudioMonitor.OverlayRenderer.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\AudioMonitor.OverlayRenderer.pdb
-C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\ref\AudioMonitor.OverlayRenderer.dll
+c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Debug\net8.0-windows\ref\AudioMonitor.OverlayRenderer.dll

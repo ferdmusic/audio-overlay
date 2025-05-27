@@ -1,12 +1,10 @@
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.runtimeconfig.json
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\testhost.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\testhost.exe
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.TestPlatform.AdapterUtilities.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.deps.json
-C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.runtimeconfig.json
-C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.dll
-C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.pdb
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.VisualStudio.CodeCoverage.Shim.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.TestPlatform.CoreUtilities.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\Microsoft.TestPlatform.PlatformAbstractions.dll
@@ -115,4 +113,6 @@ C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMoni
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\obj\Debug\net8.0\refint\AudioMonitor.Core.dll
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\obj\Debug\net8.0\AudioMonitor.Core.pdb
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\obj\Debug\net8.0\AudioMonitor.Core.genruntimeconfig.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\bin\Debug\net8.0\AudioMonitor.Core.pdb
 C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.Core\obj\Debug\net8.0\ref\AudioMonitor.Core.dll

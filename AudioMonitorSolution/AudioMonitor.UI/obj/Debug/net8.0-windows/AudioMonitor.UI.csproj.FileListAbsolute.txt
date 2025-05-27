@@ -37,7 +37,6 @@ c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMoni
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\MaterialDesignThemes.Wpf.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\Microsoft.Xaml.Behaviors.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\AudioMonitor.UI_MarkupCompile.lref
-c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\App.baml
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\Hardcodet.NotifyIcon.Wpf.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\testhost.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\AudioMonitor.Core.deps.json
@@ -135,3 +134,4 @@ c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMoni
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\tr\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\zh-Hans\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
 c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Debug\net8.0-windows\zh-Hant\Microsoft.VisualStudio.TestPlatform.TestFramework.resources.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\GeneratedInternalTypeHelper.g.cs

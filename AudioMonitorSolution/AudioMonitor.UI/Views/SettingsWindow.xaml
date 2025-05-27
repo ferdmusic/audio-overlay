@@ -8,9 +8,12 @@
         Background="Transparent"
         WindowStyle="None"
         AllowsTransparency="True"
+        Icon="/image.ico"
         Loaded="Window_Loaded">
-    
-    <Window.Resources>
+      <Window.Resources>
+        <!-- Converters -->
+        <local:DeviceTypeGroupConverter x:Key="DeviceTypeGroupConverter"/>
+        
         <!-- Color Resources (matching HTML CSS variables) -->
         <SolidColorBrush x:Key="BgColorDarkest" Color="#121212"/>
         <SolidColorBrush x:Key="BgColorDark" Color="#1e1e1e"/>
@@ -81,6 +84,106 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="10,8"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ComboBoxItem">
+                        <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
+                        <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
+                        <Setter Property="Padding" Value="10,8"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource BgColorLightHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="{StaticResource AccentColorBlue}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton x:Name="ToggleButton" 
+                                          Focusable="false"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press"
+                                          Background="{TemplateBinding Background}"
+                                          BorderBrush="{TemplateBinding BorderBrush}"
+                                          Foreground="{TemplateBinding Foreground}">
+                                <ToggleButton.Style>
+                                    <Style TargetType="ToggleButton">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToggleButton">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            BorderBrush="{TemplateBinding BorderBrush}" 
+                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                            CornerRadius="4">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <ContentPresenter Grid.Column="0"
+                                                                              HorizontalAlignment="Left"
+                                                                              VerticalAlignment="Center"
+                                                                              Margin="{TemplateBinding Padding}"
+                                                                              Content="{TemplateBinding Content}" />
+                                                            <Path Grid.Column="1"
+                                                                  x:Name="Arrow"
+                                                                  Data="M 0 0 L 4 4 L 8 0 Z"
+                                                                  Fill="{TemplateBinding Foreground}"
+                                                                  HorizontalAlignment="Center"
+                                                                  VerticalAlignment="Center"
+                                                                  Margin="0,0,8,0"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ToggleButton.Style>
+                            </ToggleButton>
+                            <ContentPresenter x:Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left" />
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True" 
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Border x:Name="DropDownBorder"
+                                        Background="{StaticResource BgColorDark}"
+                                        BorderBrush="{StaticResource BorderColor}"
+                                        BorderThickness="1"
+                                        CornerRadius="4"
+                                        MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <ScrollViewer x:Name="ScrollViewer" SnapsToDevicePixels="True">
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource BgColorLightHover}"/>
+                            </Trigger>
+                             <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.56"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
         
         <!-- TextBox Style -->
@@ -195,22 +298,24 @@
                                FontWeight="SemiBold"
                                Foreground="{StaticResource TextColorSecondary}"
                                VerticalAlignment="Center"/>
-                    
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">                        <Button Style="{StaticResource ModernButtonStyle}" 
+                      <StackPanel Grid.Column="1" Orientation="Horizontal">                        
+                        <Button Style="{StaticResource ModernButtonStyle}" 
                                 Width="30" Height="30" 
                                 Margin="5,0"
                                 Background="Transparent"
-                                BorderBrush="Transparent">
+                                BorderBrush="Transparent"
+                                Click="MinimizeToTray_Click">
                             <Path Data="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4Z" 
                                   Fill="{StaticResource TextColorSecondary}"
                                   Width="16" Height="16"/>
                         </Button>
-                        <Button Style="{StaticResource ModernButtonStyle}" 
+                        <Button Content="✕" 
+                                Style="{StaticResource ModernButtonStyle}" 
                                 Width="30" Height="30"
                                 Background="Transparent"
-                                BorderBrush="Transparent">
-                            <Ellipse Fill="DarkCyan" Width="16" Height="16"/>
-                        </Button>
+                                BorderBrush="Transparent"
+                                Click="MinimizeToTray_Click"
+                                FontSize="12"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -290,10 +395,41 @@
                                                    RadiusX="6" RadiusY="6"/>
                                     </Border>
                                 </Grid>
-                            </Border>
-                              <ComboBox x:Name="AudioInputComboBox" 
+                            </Border>                              <ComboBox x:Name="AudioInputComboBox" 
                                       Style="{StaticResource ModernComboBoxStyle}"
-                                      SelectionChanged="AudioInputComboBox_SelectionChanged">
+                                      SelectionChanged="AudioInputComboBox_SelectionChanged"
+                                      DisplayMemberPath="Name">
+                                <ComboBox.GroupStyle>
+                                    <GroupStyle>                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name, Converter={StaticResource DeviceTypeGroupConverter}}" 
+                                                          FontWeight="SemiBold" 
+                                                          FontSize="13"
+                                                          Foreground="{StaticResource AccentColorBlue}"
+                                                          Margin="8,6,8,4"/>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                        <GroupStyle.ContainerStyle>
+                                            <Style TargetType="{x:Type GroupItem}">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="{x:Type GroupItem}">
+                                                            <StackPanel>
+                                                                <ContentPresenter/>
+                                                                <Border Background="{StaticResource BgColorMedium}" 
+                                                                       BorderBrush="{StaticResource BorderColor}" 
+                                                                       BorderThickness="0,0,0,1" 
+                                                                       Margin="8,0,8,4">
+                                                                    <ItemsPresenter Margin="12,0,0,0"/>
+                                                                </Border>
+                                                            </StackPanel>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </GroupStyle.ContainerStyle>
+                                    </GroupStyle>
+                                </ComboBox.GroupStyle>
                             </ComboBox>
                         </StackPanel>
                     </Border>

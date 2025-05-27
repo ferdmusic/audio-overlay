@@ -2,20 +2,33 @@
 using AudioMonitor.Core.Logging;
 using NAudio.CoreAudioApi; // For MMDeviceEnumerator
 using NAudio.Wave;
+using System.Linq;
 
 #if ASIO_SUPPORT
 // We need AsioDriver for GetAsioDriverNames()
 #endif
 
 namespace AudioMonitor.Core.Services
-{
+{    public enum AudioDeviceType
+    {
+        WASAPI,
+        ASIO
+    }
+
     public class AudioDevice
     {
         public string? Name { get; set; }
         public string? Id { get; set; } // Using string DeviceID from MMDevice
         public bool IsFocusrite { get; set; }
+        public AudioDeviceType DeviceType { get; set; }
 
         public override string ToString() => Name ?? "Unknown Device";
+    }
+
+    public class AudioDeviceGroup
+    {
+        public string GroupName { get; set; } = "";
+        public List<AudioDevice> Devices { get; set; } = new List<AudioDevice>();
     }
 
     public class AudioService : IDisposable
@@ -44,12 +57,12 @@ namespace AudioMonitor.Core.Services
                 for (int i = 0; i < mmDevices.Count; i++)
                 {
                     var device = mmDevices[i];
-                    bool isFocusrite = device.FriendlyName.ToLowerInvariant().Contains("focusrite");
-                    devices.Add(new AudioDevice
+                    bool isFocusrite = device.FriendlyName.ToLowerInvariant().Contains("focusrite");                    devices.Add(new AudioDevice
                     {
                         Name = device.FriendlyName,
                         Id = device.ID,
-                        IsFocusrite = isFocusrite
+                        IsFocusrite = isFocusrite,
+                        DeviceType = AudioDeviceType.WASAPI
                     });
                     Log.Info($"Device {i}: Name='{device.FriendlyName}', ID='{device.ID}', IsFocusrite={isFocusrite}");
                 }
@@ -69,12 +82,12 @@ namespace AudioMonitor.Core.Services
                 for (int i = 0; i < asioDriverNames.Length; i++)
                 {
                     string driverName = asioDriverNames[i];
-                    bool isFocusrite = driverName.ToLowerInvariant().Contains("focusrite");
-                    devices.Add(new AudioDevice
+                    bool isFocusrite = driverName.ToLowerInvariant().Contains("focusrite");                    devices.Add(new AudioDevice
                     {
                         Name = $"ASIO: {driverName}",
                         Id = $"ASIO:{driverName}",
-                        IsFocusrite = isFocusrite
+                        IsFocusrite = isFocusrite,
+                        DeviceType = AudioDeviceType.ASIO
                     });
                     Log.Info($"ASIO Driver {i}: Name='{driverName}', IsFocusrite={isFocusrite}");
                 }
@@ -89,6 +102,36 @@ namespace AudioMonitor.Core.Services
                 Log.Info("No active input devices found. For microphone input, ensure it's enabled and not exclusively used by another application.");
             }
             return devices;
+        }
+
+        public List<AudioDeviceGroup> GetGroupedInputDevices()
+        {
+            var devices = GetInputDevices();
+            var groups = new List<AudioDeviceGroup>();
+
+            // Group WASAPI devices
+            var wasapiDevices = devices.Where(d => d.DeviceType == AudioDeviceType.WASAPI).ToList();
+            if (wasapiDevices.Any())
+            {
+                groups.Add(new AudioDeviceGroup
+                {
+                    GroupName = "WASAPI Devices",
+                    Devices = wasapiDevices
+                });
+            }
+
+            // Group ASIO devices
+            var asioDevices = devices.Where(d => d.DeviceType == AudioDeviceType.ASIO).ToList();
+            if (asioDevices.Any())
+            {
+                groups.Add(new AudioDeviceGroup
+                {
+                    GroupName = "ASIO Devices",
+                    Devices = asioDevices
+                });
+            }
+
+            return groups;
         }
 
         public void StartMonitoring(string deviceId)

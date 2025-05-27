@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\obj\Debug\net8.0-windows\
 AudioMonitor.UI
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-c:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\App.xaml
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\App.xaml
 2302661862
 
 5-1542106025
-2321116810076
+2321911450116
 Views\MainWindow.xaml;Views\SettingsWindow.xaml;
 
 False

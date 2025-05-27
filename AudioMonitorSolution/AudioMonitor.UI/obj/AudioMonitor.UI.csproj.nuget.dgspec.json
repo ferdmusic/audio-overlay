@@ -57,6 +57,12 @@
               "target": "Package",
               "version": "[3.1.1, )"
             },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.13, )",
+              "autoReferenced": true
+            },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.8.0, )"
@@ -88,16 +94,21 @@
           },
           "runtimeIdentifierGraphPath": "C:\\Users\\Ferdmusic\\.dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
         }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
+        }
       }
     },
-    "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
+    "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+        "projectUniqueName": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
         "projectName": "AudioMonitor.OverlayRenderer",
-        "projectPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+        "projectPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
         "packagesPath": "C:\\Users\\Ferdmusic\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
+        "outputPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -134,6 +145,14 @@
       "frameworks": {
         "net8.0-windows7.0": {
           "targetAlias": "net8.0-windows",
+          "dependencies": {
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.13, )",
+              "autoReferenced": true
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -154,6 +173,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Users\\Ferdmusic\\.dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     },
@@ -188,8 +212,8 @@
               "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj": {
                 "projectPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj"
               },
-              "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
-                "projectPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj"
+              "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
+                "projectPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj"
               }
             }
           }
@@ -216,6 +240,12 @@
             "MaterialDesignThemes": {
               "target": "Package",
               "version": "[5.2.2-ci998, )"
+            },
+            "Microsoft.NET.ILLink.Tasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.13, )",
+              "autoReferenced": true
             }
           },
           "imports": [
@@ -238,6 +268,11 @@
             }
           },
           "runtimeIdentifierGraphPath": "C:\\Users\\Ferdmusic\\.dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+        }
+      },
+      "runtimes": {
+        "win-x64": {
+          "#import": []
         }
       }
     }

@@ -1,0 +1,6 @@
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\AudioMonitor.UI.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\AudioMonitor.Core.runtimeconfig.json
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\testhost.exe
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\AudioMonitor.Core.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\AudioMonitor.OverlayRenderer.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.UI\bin\Release\publish\AudioMonitor.UI.exe

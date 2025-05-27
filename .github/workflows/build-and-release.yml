@@ -45,7 +45,7 @@ jobs:
         run: dotnet restore $env:Solution_Name --runtime win-x64
 
       - name: Build Project
-        run: dotnet build $env:Solution_Name --configuration Release --no-restore --runtime win-x64
+        run: dotnet build $env:Solution_Name --configuration Release --no-restore
 
       - name: Run Tests
         run: dotnet test $env:Solution_Name --configuration Release --no-build --verbosity normal

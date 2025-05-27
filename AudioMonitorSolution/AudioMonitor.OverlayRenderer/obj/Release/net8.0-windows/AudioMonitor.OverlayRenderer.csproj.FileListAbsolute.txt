@@ -1,0 +1,16 @@
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Release\net8.0-windows\AudioMonitor.OverlayRenderer.deps.json
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Release\net8.0-windows\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\bin\Release\net8.0-windows\AudioMonitor.OverlayRenderer.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\OverlayWindow.baml
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\OverlayWindow.g.cs
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer_MarkupCompile.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.g.resources
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.AssemblyInfoInputs.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.AssemblyInfo.cs
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.csproj.CoreCompileInputs.cache
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.sourcelink.json
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\refint\AudioMonitor.OverlayRenderer.dll
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\AudioMonitor.OverlayRenderer.pdb
+C:\Users\Ferdmusic\Documents\GitHub\audio-overlay\AudioMonitorSolution\AudioMonitor.OverlayRenderer\obj\Release\net8.0-windows\ref\AudioMonitor.OverlayRenderer.dll

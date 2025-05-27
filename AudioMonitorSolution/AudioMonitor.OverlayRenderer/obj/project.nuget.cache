@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "GayUuYbNem8=",
+  "dgSpecHash": "VPphHMWt17E=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Ferdmusic\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\8.0.13\\microsoft.netcore.app.runtime.win-x64.8.0.13.nupkg.sha512",
+    "C:\\Users\\Ferdmusic\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\8.0.13\\microsoft.windowsdesktop.app.runtime.win-x64.8.0.13.nupkg.sha512",
+    "C:\\Users\\Ferdmusic\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\8.0.13\\microsoft.aspnetcore.app.runtime.win-x64.8.0.13.nupkg.sha512"
+  ],
   "logs": []
 }

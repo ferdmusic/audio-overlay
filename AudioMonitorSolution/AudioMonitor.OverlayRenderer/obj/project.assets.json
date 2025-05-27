@@ -1,7 +1,8 @@
 {
   "version": 3,
   "targets": {
-    "net8.0-windows7.0": {}
+    "net8.0-windows7.0": {},
+    "net8.0-windows7.0/win-x64": {}
   },
   "libraries": {},
   "projectFileDependencyGroups": {
@@ -14,11 +15,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+      "projectUniqueName": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
       "projectName": "AudioMonitor.OverlayRenderer",
-      "projectPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+      "projectPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
       "packagesPath": "C:\\Users\\Ferdmusic\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
+      "outputPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -66,6 +67,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Runtime.win-x64",
+            "version": "[8.0.13, 8.0.13]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Runtime.win-x64",
+            "version": "[8.0.13, 8.0.13]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Runtime.win-x64",
+            "version": "[8.0.13, 8.0.13]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
@@ -75,6 +90,11 @@
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Users\\Ferdmusic\\.dotnet\\sdk\\8.0.406/PortableRuntimeIdentifierGraph.json"
+      }
+    },
+    "runtimes": {
+      "win-x64": {
+        "#import": []
       }
     }
   }

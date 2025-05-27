@@ -13,95 +13,105 @@ namespace AudioMonitor.UI.Views
         private readonly AudioService _audioService;
         public ApplicationSettings CurrentSettings { get; private set; }
 
-        // Use ObservableCollection for DataGrid binding to reflect add/remove operations
-        public ObservableCollection<ThresholdLevel> ThresholdLevelsView { get; set; }
-
         public SettingsWindow(ApplicationSettings settings, AudioService audioService)
         {
             InitializeComponent();
-            DataContext = this; // Set DataContext for binding ThresholdsDataGrid
 
             _audioService = audioService;
-            CurrentSettings = settings; // Keep a reference to the passed settings object
+            CurrentSettings = settings;
 
-            // Populate Device ComboBox
+            // Populate Audio Input ComboBox
             var devices = _audioService.GetInputDevices();
-            DeviceComboBox.ItemsSource = devices;
+            AudioInputComboBox.ItemsSource = devices;
             if (!string.IsNullOrEmpty(CurrentSettings.SelectedAudioDeviceId))
             {
                 var selectedDev = devices.FirstOrDefault(d => d.Id == CurrentSettings.SelectedAudioDeviceId);
-                if (selectedDev != null) DeviceComboBox.SelectedItem = selectedDev;
-                else if (devices.Any()) DeviceComboBox.SelectedIndex = 0;
+                if (selectedDev != null) AudioInputComboBox.SelectedItem = selectedDev;
+                else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
             }
-            else if (devices.Any()) DeviceComboBox.SelectedIndex = 0;
+            else if (devices.Any()) AudioInputComboBox.SelectedIndex = 0;
 
             // Populate Overlay Position ComboBox
-            OverlayPositionComboBox.ItemsSource = System.Enum.GetValues(typeof(OverlayEdge));
-            OverlayPositionComboBox.SelectedItem = CurrentSettings.OverlayPosition;
+            OverlayPositionComboBox.ItemsSource = System.Enum.GetValues(typeof(OverlayEdge)); // Changed from OverlayBehaviorComboBox
+            OverlayPositionComboBox.SelectedItem = CurrentSettings.OverlayPosition; // Changed from OverlayBehaviorComboBox
+
+            // Set threshold text boxes
+            ThresholdSafeTextBox.Text = CurrentSettings.ThresholdSafe.ToString();
+            ThresholdWarningTextBox.Text = CurrentSettings.ThresholdWarning.ToString();
+            ThresholdCriticalTextBox.Text = CurrentSettings.ThresholdCritical.ToString();
+
+            // Set overlay thickness
+            OverlayThicknessTextBox.Text = CurrentSettings.OverlayThickness.ToString();
 
             // Set other control values from CurrentSettings
-            OverlayHeightSlider.Value = CurrentSettings.OverlayHeight;
-            AutostartCheckBox.IsChecked = CurrentSettings.AutostartEnabled;
-            AcousticWarningCheckBox.IsChecked = CurrentSettings.AcousticWarningEnabled;
-            AcousticWarningVolumeSlider.Value = CurrentSettings.AcousticWarningVolume;
+            AcousticWarningsCheckBox.IsChecked = CurrentSettings.AcousticWarningEnabled; // Changed from EnableAcousticWarningsCheckBox
+            AutostartCheckBox.IsChecked = CurrentSettings.AutostartEnabled; // Changed from StartWithWindowsCheckBox
 
-            // Initialize ObservableCollection for the DataGrid
-            if (CurrentSettings.WarningLevels == null)
-            {
-                CurrentSettings.WarningLevels = WarningConfiguration.GetDefault();
-            }
-            if (CurrentSettings.WarningLevels.Thresholds == null)
-            {
-                CurrentSettings.WarningLevels.Thresholds = new List<ThresholdLevel>();
-            }
-            ThresholdLevelsView = new ObservableCollection<ThresholdLevel>(CurrentSettings.WarningLevels.Thresholds);
-            ThresholdsDataGrid.ItemsSource = ThresholdLevelsView; // Bind DataGrid
+            // Set Acoustic Volume Slider and Text
+            AcousticVolumeSlider.Value = CurrentSettings.AcousticWarningVolume * 100;
+            AcousticVolumeText.Text = $"{AcousticVolumeSlider.Value}%";
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        private void SaveSettings_Click(object sender, RoutedEventArgs e) // Changed from SaveButton_Click
         {
             // Update CurrentSettings from UI controls
-            if (DeviceComboBox.SelectedItem is AudioDevice dev)
+            if (AudioInputComboBox.SelectedItem is AudioDevice dev)
                 CurrentSettings.SelectedAudioDeviceId = dev.Id;
             
-            CurrentSettings.OverlayPosition = (OverlayEdge)OverlayPositionComboBox.SelectedItem;
-            CurrentSettings.OverlayHeight = (int)OverlayHeightSlider.Value;
-            CurrentSettings.AutostartEnabled = AutostartCheckBox.IsChecked == true;
-            CurrentSettings.AcousticWarningEnabled = AcousticWarningCheckBox.IsChecked == true;
-            CurrentSettings.AcousticWarningVolume = AcousticWarningVolumeSlider.Value;
+            if (OverlayPositionComboBox.SelectedItem is OverlayEdge edge) // Changed from OverlayBehaviorComboBox
+                CurrentSettings.OverlayPosition = edge;
 
-            // Update thresholds from the ObservableCollection back to the settings object
-            CurrentSettings.WarningLevels.Thresholds = new List<ThresholdLevel>(ThresholdLevelsView);
-            CurrentSettings.WarningLevels.SortThresholds(); // Ensure they are sorted
+            // Update threshold values
+            if (double.TryParse(ThresholdSafeTextBox.Text, out double safe))
+                CurrentSettings.ThresholdSafe = safe;
+            if (double.TryParse(ThresholdWarningTextBox.Text, out double warning))
+                CurrentSettings.ThresholdWarning = warning;
+            if (double.TryParse(ThresholdCriticalTextBox.Text, out double critical))
+                CurrentSettings.ThresholdCritical = critical;
+
+            // Update overlay thickness
+            if (int.TryParse(OverlayThicknessTextBox.Text, out int thickness))
+                CurrentSettings.OverlayThickness = thickness;
+            
+            CurrentSettings.AutostartEnabled = AutostartCheckBox.IsChecked == true; // Changed from StartWithWindowsCheckBox
+            CurrentSettings.AcousticWarningEnabled = AcousticWarningsCheckBox.IsChecked == true; // Changed from EnableAcousticWarningsCheckBox
+            CurrentSettings.AcousticWarningVolume = AcousticVolumeSlider.Value / 100.0;
 
             DialogResult = true;
             Close();
         }
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        private void StartMonitoring_Click(object sender, RoutedEventArgs e) // Changed from StartApplication_Click
         {
-            DialogResult = false;
-            Close();
+            SaveSettings_Click(sender, e); 
+            // Actual monitoring start logic would be handled by the main application controller/viewmodel after settings are saved and this window closes.
+            // For now, this button primarily ensures settings are saved before the user expects monitoring to reflect new settings.
+            System.Windows.MessageBox.Show("Monitoring will start with the new settings after this window is closed.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void AddThreshold_Click(object sender, RoutedEventArgs e)
+        private void MinimizeToTray_Click(object sender, RoutedEventArgs e)
         {
-            // Add a new default threshold to the view model collection
-            // The DataGrid will automatically update.
-            var newThreshold = new ThresholdLevel("New Level", -6, "#FFFFFF");
-            ThresholdLevelsView.Add(newThreshold);
+            System.Windows.MessageBox.Show("Minimize to Tray Clicked (Not Implemented)", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            // this.WindowState = WindowState.Minimized; 
+            // this.Hide(); 
         }
 
-        private void RemoveThreshold_Click(object sender, RoutedEventArgs e)
+        private void AcousticVolumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (ThresholdsDataGrid.SelectedItem is ThresholdLevel selectedThreshold)
+            if (AcousticVolumeText != null)
             {
-                ThresholdLevelsView.Remove(selectedThreshold);
+                AcousticVolumeText.Text = $"{(int)e.NewValue}%";
             }
-            else
-            {
-                System.Windows.MessageBox.Show("Please select a threshold to remove.", "Remove Threshold", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Any actions to perform when the window is loaded, if necessary.
+        }
+
+        private void AudioInputComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Handle selection change if needed, e.g., update a live preview or validate selection.
         }
     }
 }

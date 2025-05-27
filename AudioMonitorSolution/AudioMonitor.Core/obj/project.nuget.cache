@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1miEv6Zq6V4=",
+  "dgSpecHash": "9mc95BxXTho=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj",
+  "projectFilePath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.Core\\AudioMonitor.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Ferdmusic\\.nuget\\packages\\microsoft.codecoverage\\17.8.0\\microsoft.codecoverage.17.8.0.nupkg.sha512",
     "C:\\Users\\Ferdmusic\\.nuget\\packages\\microsoft.net.test.sdk\\17.8.0\\microsoft.net.test.sdk.17.8.0.nupkg.sha512",

@@ -11,8 +11,8 @@ namespace AudioMonitor.Core.Tests
     [TestClass]
     public class SettingsServiceTests
     {
-        private SettingsService _settingsService;
-        private string _testConfigFilePath; // To store the actual path used by SettingsService
+        private SettingsService? _settingsService; // Made nullable
+        private string? _testConfigFilePath; // Made nullable
 
         [TestInitialize]
         public void Setup()
@@ -38,7 +38,7 @@ namespace AudioMonitor.Core.Tests
             var originalSettings = ApplicationSettings.GetDefault();
             originalSettings.SelectedAudioDeviceId = "test-device-id";
             originalSettings.OverlayPosition = OverlayEdge.Bottom;
-            originalSettings.OverlayHeight = 25;
+            originalSettings.OverlayThickness = 25; // Changed from OverlayHeight
             originalSettings.AcousticWarningEnabled = true;
             originalSettings.AcousticWarningVolume = 0.55;
             originalSettings.AutostartEnabled = true;
@@ -46,14 +46,14 @@ namespace AudioMonitor.Core.Tests
             originalSettings.WarningLevels.SortThresholds(); // Ensure it's sorted before comparison
 
             // Act
-            _settingsService.SaveApplicationSettings(originalSettings);
-            var loadedSettings = _settingsService.LoadApplicationSettings();
+            _settingsService!.SaveApplicationSettings(originalSettings); // Added null-forgiving operator
+            var loadedSettings = _settingsService!.LoadApplicationSettings(); // Added null-forgiving operator
 
             // Assert
             Assert.IsNotNull(loadedSettings);
             Assert.AreEqual(originalSettings.SelectedAudioDeviceId, loadedSettings.SelectedAudioDeviceId);
             Assert.AreEqual(originalSettings.OverlayPosition, loadedSettings.OverlayPosition);
-            Assert.AreEqual(originalSettings.OverlayHeight, loadedSettings.OverlayHeight);
+            Assert.AreEqual(originalSettings.OverlayThickness, loadedSettings.OverlayThickness); // Changed from OverlayHeight
             Assert.AreEqual(originalSettings.AcousticWarningEnabled, loadedSettings.AcousticWarningEnabled);
             Assert.AreEqual(originalSettings.AcousticWarningVolume, loadedSettings.AcousticWarningVolume, 0.001); // Delta for double
             Assert.AreEqual(originalSettings.AutostartEnabled, loadedSettings.AutostartEnabled);
@@ -80,26 +80,26 @@ namespace AudioMonitor.Core.Tests
             // Arrange (ensure no file exists - Setup does this)
 
             // Act
-            var loadedSettings = _settingsService.LoadApplicationSettings();
+            var loadedSettings = _settingsService!.LoadApplicationSettings(); // Added null-forgiving operator
 
             // Assert
             var defaultSettings = ApplicationSettings.GetDefault();
             Assert.IsNotNull(loadedSettings);
             // Check a few key default properties
             Assert.AreEqual(defaultSettings.OverlayPosition, loadedSettings.OverlayPosition);
-            Assert.AreEqual(defaultSettings.OverlayHeight, loadedSettings.OverlayHeight);
+            Assert.AreEqual(defaultSettings.OverlayThickness, loadedSettings.OverlayThickness); // Changed from OverlayHeight
             Assert.AreEqual(defaultSettings.AcousticWarningEnabled, loadedSettings.AcousticWarningEnabled);
             Assert.AreEqual(defaultSettings.WarningLevels.Thresholds.Count, loadedSettings.WarningLevels.Thresholds.Count);
             
             // Verify that a new default config file was created
-            Assert.IsTrue(File.Exists(_testConfigFilePath), "A new config file should have been created with default settings.");
+            Assert.IsTrue(File.Exists(_testConfigFilePath!), "A new config file should have been created with default settings."); // Added null-forgiving operator
         }
         
         [TestCleanup]
         public void Cleanup()
         {
             // Clean up the config file created during the test.
-            if (File.Exists(_testConfigFilePath))
+            if (!string.IsNullOrEmpty(_testConfigFilePath) && File.Exists(_testConfigFilePath))
             {
                 File.Delete(_testConfigFilePath);
             }

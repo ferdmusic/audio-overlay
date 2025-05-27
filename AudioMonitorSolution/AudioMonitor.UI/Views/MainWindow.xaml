@@ -3,8 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:tb="http://www.hardcodet.net/taskbar"
-        Title="MainWindow" Height="450" Width="800"
-        Closing="Window_Closing">
+        Title="AudioMonitor" Height="500" Width="900"
+        MinHeight="400" MinWidth="600"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Closing="Window_Closing"
+        MouseDown="Window_MouseDown">
     <Window.Resources>
         <tb:TaskbarIcon x:Name="MyNotifyIcon" x:Key="MyNotifyIconResource"
                         IconSource="/image.ico"
@@ -17,24 +22,182 @@
                 </ContextMenu>
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
+
+        <!-- Color Resources (matching SettingsWindow) -->
+        <SolidColorBrush x:Key="BgColorDarkest" Color="#121212"/>
+        <SolidColorBrush x:Key="BgColorDark" Color="#1e1e1e"/>
+        <SolidColorBrush x:Key="BgColorMedium" Color="#2a2a2e"/>
+        <SolidColorBrush x:Key="BgColorLightHover" Color="#38383c"/>
+        <SolidColorBrush x:Key="TextColorPrimary" Color="#e0e0e0"/>
+        <SolidColorBrush x:Key="TextColorSecondary" Color="#a0a0a0"/>
+        <SolidColorBrush x:Key="AccentColorBlue" Color="#0078d4"/>
+        <SolidColorBrush x:Key="AccentColorGreen" Color="#107c10"/>
+        <SolidColorBrush x:Key="AccentColorYellow" Color="#f0a30a"/>
+        <SolidColorBrush x:Key="AccentColorRed" Color="#d13438"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#404040"/>
+        
+        <!-- Glass Effect Brushes -->
+        <SolidColorBrush x:Key="GlassBackground" Color="#03ffffff" Opacity="0.03"/>
+        <SolidColorBrush x:Key="GlassBackgroundHover" Color="#0fffffff" Opacity="0.06"/>
+        <SolidColorBrush x:Key="GlassBorder" Color="#1affffff" Opacity="0.1"/>
+        
+        <!-- Button Styles -->
+        <Style x:Key="ModernButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource BgColorLightHover}"/>
+                                <Setter Property="BorderBrush" Value="#555"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="PrimaryButtonStyle" BasedOn="{StaticResource ModernButtonStyle}" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentColorBlue}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentColorBlue}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#005a9e"/>
+                    <Setter Property="BorderBrush" Value="#005a9e"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <!-- ComboBox Style -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
+            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="8,8"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
     </Window.Resources>
-    <!-- 
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{materialDesign:MaterialDesignFont}" 
-    -->
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="AudioMonitor UI is running!" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="24" Grid.Row="0" Margin="0,20,0,20"/>
-        <!-- Style="{StaticResource MaterialDesignHeadline4TextBlock}" -->
-        <ComboBox x:Name="DeviceComboBox" Width="400" Margin="10" Grid.Row="1"/>
-        <!-- materialDesign:HintAssist.Hint="Select Audio Device" Style="{StaticResource MaterialDesignFloatingHintComboBox}" -->
-    </Grid>
+
+    <!-- Main Container with Glass Effect -->
+    <Border Background="{StaticResource BgColorDark}" 
+            CornerRadius="8">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="Black" Opacity="0.4"/>
+        </Border.Effect>
+        
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/> <!-- Header -->
+                <RowDefinition Height="*"/>    <!-- Content -->
+                <RowDefinition Height="Auto"/> <!-- Footer -->
+            </Grid.RowDefinitions>
+            
+            <!-- Header -->
+            <Border Grid.Row="0" 
+                    Background="{StaticResource BgColorMedium}"
+                    BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="0,0,0,1"
+                    Padding="20,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Text="AudioMonitor" 
+                               FontSize="20" 
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextColorPrimary}"
+                               VerticalAlignment="Center"/>
+                    
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="Settings" 
+                                Style="{StaticResource ModernButtonStyle}"
+                                Click="SettingsMenuItem_Click"
+                                Margin="10,0"/>
+                        <Button Content="✕" 
+                                Style="{StaticResource ModernButtonStyle}"
+                                Click="ExitMenuItem_Click"
+                                Width="30" Height="30"
+                                FontSize="12"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+            
+            <!-- Content -->
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0"
+                          Text="Audio Input Device" 
+                          FontSize="16" 
+                          FontWeight="SemiBold"
+                          Foreground="{StaticResource TextColorPrimary}"
+                          Margin="0,0,0,15"/>
+                
+                <ComboBox Grid.Row="1"
+                         x:Name="DeviceComboBox" 
+                         Style="{StaticResource ModernComboBoxStyle}"
+                         Width="500" 
+                         Height="40"
+                         HorizontalAlignment="Left"
+                         Margin="0,0,0,20"/>
+                
+                <TextBlock Grid.Row="2"
+                          Text="AudioMonitor is running and monitoring audio levels in real-time. Configure settings using the Settings button above."
+                          FontSize="14"
+                          Foreground="{StaticResource TextColorSecondary}"
+                          TextWrapping="Wrap"
+                          VerticalAlignment="Top"
+                          Margin="0,20,0,0"/>
+            </Grid>
+            
+            <!-- Footer -->
+            <Border Grid.Row="2" 
+                    Background="{StaticResource BgColorMedium}"
+                    BorderBrush="{StaticResource BorderColor}"
+                    BorderThickness="0,1,0,0"
+                    Padding="20,10">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Status: Monitoring" 
+                              FontSize="12"
+                              Foreground="{StaticResource AccentColorGreen}"
+                              VerticalAlignment="Center"
+                              Margin="0,0,15,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Border>
 </Window>

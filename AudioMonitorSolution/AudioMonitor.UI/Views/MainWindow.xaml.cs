@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input; // Required for MouseButtonEventArgs
 using AudioMonitor.OverlayRenderer;
 using AudioMonitor.Core.Services;
 using AudioMonitor.Core.Logic;
@@ -171,12 +172,21 @@ namespace AudioMonitor.UI.Views
 
             if (!string.IsNullOrEmpty(_appSettings.SelectedAudioDeviceId))
             {
-                _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId);
+                _audioService.StartMonitoring(_appSettings.SelectedAudioDeviceId); // CS8604 handled by prior null/empty check
             }
             _audioService.LevelChanged += AudioService_LevelChanged;
 
             InitializeOverlays();
             UpdateMonitoringStatusInApp(); // Notify App about initial status
+        }
+
+        // Add drag functionality for the borderless window
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                this.DragMove();
+            }
         }
 
         private void InitializeOverlays()
@@ -195,11 +205,9 @@ namespace AudioMonitor.UI.Views
                 // Set initial position and size based on _appSettings
                 // The actual positioning logic will be in UpdateOverlayLayout, called by this method
                 _overlayWindows.Add(overlay); 
-                overlay.Show();
-            }
+                overlay.Show();            }
             UpdateOverlayLayout(); // Apply layout based on current settings
         }
-
 
         private void DeviceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -209,7 +217,7 @@ namespace AudioMonitor.UI.Views
                 {
                     _audioService?.StopMonitoring(); // Null check
                     if (_appSettings != null) _appSettings.SelectedAudioDeviceId = dev.Id; // Null check
-                    _audioService?.StartMonitoring(dev.Id); // Null check
+                    if (!string.IsNullOrEmpty(dev.Id)) _audioService?.StartMonitoring(dev.Id); // Null check for dev.Id
                     if (_settingsService != null && _appSettings != null) _settingsService.SaveApplicationSettings(_appSettings);
                 }
             }
@@ -380,7 +388,7 @@ namespace AudioMonitor.UI.Views
         {
             if (_overlayWindows == null || !_overlayWindows.Any() || _appSettings == null) return;
 
-            var overlayHeightSettingDips = (double)_appSettings.OverlayHeight; // Assuming OverlayHeight is in DIPs
+            var overlayThicknessSettingDips = (double)_appSettings.OverlayThickness; // Changed OverlayHeight to OverlayThickness
             var overlayPosition = _appSettings.OverlayPosition;
 
             var screens = System.Windows.Forms.Screen.AllScreens;
@@ -402,44 +410,34 @@ namespace AudioMonitor.UI.Views
                     dpiX = monitorDpiX;
                     dpiY = monitorDpiY;
                 }
-                else
-                {
-                    // Fallback or log error if GetDpiForMonitor fails
-                    // For simplicity, we'll use default 96 DPI if call fails
-                    Core.Logging.Log.Warning($"Failed to get DPI for monitor {screen.DeviceName}. Using default 96 DPI.");
-                }
 
                 double scaleX = dpiX / 96.0;
                 double scaleY = dpiY / 96.0;
 
-                // Convert physical screen bounds to DIPs
-                double dipLeft = screenBoundsPhysical.Left / scaleX;
-                double dipTop = screenBoundsPhysical.Top / scaleY;
-                double dipWidth = screenBoundsPhysical.Width / scaleX;
-                double dipHeight = screenBoundsPhysical.Height / scaleY;
+                // Convert screen bounds from physical pixels to DIPs
+                double screenLeftDips = screenBoundsPhysical.Left / scaleX;
+                double screenTopDips = screenBoundsPhysical.Top / scaleY;
+                double screenWidthDips = screenBoundsPhysical.Width / scaleX;
+                double screenHeightDips = screenBoundsPhysical.Height / scaleY;
 
-                System.Windows.Rect newRectInDips = new System.Windows.Rect();
+                overlay.Width = screenWidthDips;
+                overlay.Height = overlayThicknessSettingDips; // Use the renamed property
+                overlay.Left = screenLeftDips;
 
                 switch (overlayPosition)
                 {
                     case OverlayEdge.Top:
-                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop, dipWidth, overlayHeightSettingDips);
+                        overlay.Top = screenTopDips;
                         break;
                     case OverlayEdge.Bottom:
-                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop + dipHeight - overlayHeightSettingDips, dipWidth, overlayHeightSettingDips);
+                        overlay.Top = screenTopDips + screenHeightDips - overlayThicknessSettingDips; // Use the renamed property
                         break;
-                    case OverlayEdge.Left:
-                        newRectInDips = new System.Windows.Rect(dipLeft, dipTop, overlayHeightSettingDips, dipHeight);
-                        break;
-                    case OverlayEdge.Right:
-                        newRectInDips = new System.Windows.Rect(dipLeft + dipWidth - overlayHeightSettingDips, dipTop, overlayHeightSettingDips, dipHeight);
-                        break;
+                    // Add cases for Left and Right if they involve different Width/Height/Top/Left logic
+                    // For now, assuming Left/Right might mean a vertical bar, which needs more layout logic.
+                    // If Left/Right are full-width like Top/Bottom but just positioned differently, adjust Top/Left.
+                    // This example primarily handles Top/Bottom horizontal bars.
                 }
-                overlay.SetOverlayPositionAndSize(newRectInDips);
             }
         }
-        
-        // Ensure App.xaml.cs handles tray icon interactions (ShowSettings, ToggleMonitoring, Exit)
-        // and potentially updates the tray icon based on monitoring status or critical levels.
     }
 }

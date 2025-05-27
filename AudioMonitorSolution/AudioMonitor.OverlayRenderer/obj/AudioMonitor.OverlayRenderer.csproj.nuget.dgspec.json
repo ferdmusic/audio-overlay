@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {}
+    "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
+    "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+        "projectUniqueName": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
         "projectName": "AudioMonitor.OverlayRenderer",
-        "projectPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
+        "projectPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\AudioMonitor.OverlayRenderer.csproj",
         "packagesPath": "C:\\Users\\Ferdmusic\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
+        "outputPath": "C:\\Users\\Ferdmusic\\Documents\\GitHub\\audio-overlay\\AudioMonitorSolution\\AudioMonitor.OverlayRenderer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

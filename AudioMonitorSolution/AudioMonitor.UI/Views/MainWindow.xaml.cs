@@ -6,6 +6,7 @@ using AudioMonitor.Core.Models;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Forms;
+using System.Windows.Controls;
 
 namespace AudioMonitor.UI.Views
 {
@@ -18,6 +19,7 @@ namespace AudioMonitor.UI.Views
         private WarningConfiguration _config;
         private string _selectedDeviceId;
         private bool _monitoringActive = true;
+        private ComboBox? _deviceComboBox;
 
         public MainWindow()
         {
@@ -32,15 +34,22 @@ namespace AudioMonitor.UI.Views
             _levelAnalyzer = new LevelAnalyzer(_config);
             _audioService = new AudioService();
             var devices = _audioService.GetInputDevices();
-            // Auto-select Focusrite if available, else default
-            var focusrite = devices.FirstOrDefault(d => d.IsFocusrite);
-            _selectedDeviceId = focusrite?.Id ?? devices.FirstOrDefault()?.Id;
+
+            // Device-Auswahl-ComboBox (UI minimal)
+            _deviceComboBox = new ComboBox { Width = 400, Margin = new Thickness(10) };
+            foreach (var dev in devices)
+                _deviceComboBox.Items.Add(dev);
+            _deviceComboBox.SelectionChanged += DeviceComboBox_SelectionChanged;
+            _deviceComboBox.SelectedIndex = devices.FindIndex(d => d.IsFocusrite) >= 0 ? devices.FindIndex(d => d.IsFocusrite) : 0;
+            (this.Content as Grid)?.Children.Add(_deviceComboBox);
+
+            _selectedDeviceId = (devices.Count > 0) ? devices[_deviceComboBox.SelectedIndex].Id : null;
             if (_selectedDeviceId != null)
                 _audioService.StartMonitoring(_selectedDeviceId);
             _audioService.LevelChanged += AudioService_LevelChanged;
 
             // Multi-Monitor Overlay
-            foreach (var screen in Screen.AllScreens)
+            foreach (var screen in System.Windows.Forms.Screen.AllScreens)
             {
                 var overlay = new OverlayWindow();
                 overlay.SetOverlayPositionAndSize(new System.Windows.Rect(
@@ -51,6 +60,16 @@ namespace AudioMonitor.UI.Views
                 ));
                 overlay.Show();
                 _overlayWindows.Add(overlay);
+            }
+        }
+
+        private void DeviceComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_deviceComboBox?.SelectedItem is AudioMonitor.Core.Services.AudioDevice dev)
+            {
+                _audioService.StopMonitoring();
+                _selectedDeviceId = dev.Id;
+                _audioService.StartMonitoring(_selectedDeviceId);
             }
         }
 

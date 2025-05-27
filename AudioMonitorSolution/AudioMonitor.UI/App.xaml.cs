@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Threading;
 using Application = System.Windows.Application;
@@ -17,7 +16,7 @@ namespace AudioMonitor.UI
         {
             base.OnStartup(e);
             _mainWindow = new MainWindow();
-            _mainWindow.Hide(); // Start hidden, only tray
+            _mainWindow.Show(); // Show main window on startup
             SetupTray();
         }
 
@@ -29,9 +28,9 @@ namespace AudioMonitor.UI
             _trayIcon.Text = "AudioMonitor";
 
             var contextMenu = new ContextMenuStrip();
-            contextMenu.Items.Add("Einstellungen öffnen", null, (s, e) => ShowSettings());
-            contextMenu.Items.Add("Überwachung aktivieren/deaktivieren", null, (s, e) => ToggleMonitoring());
-            contextMenu.Items.Add("Beenden", null, (s, e) => ExitApp());
+            contextMenu.Items.Add("Show Settings", null, (s, e) => ShowSettings());
+            contextMenu.Items.Add("Enable/Disable Monitoring", null, (s, e) => ToggleMonitoring());
+            contextMenu.Items.Add("Exit", null, (s, e) => ExitApp());
             _trayIcon.ContextMenuStrip = contextMenu;
             _trayIcon.DoubleClick += (s, e) => ShowSettings();
         }

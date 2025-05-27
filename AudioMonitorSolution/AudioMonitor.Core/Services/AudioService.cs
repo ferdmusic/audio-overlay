@@ -7,7 +7,7 @@ using System.Linq;
 using AudioMonitor.Core.Logging;
 
 #if ASIO_SUPPORT
-// using NAudio.Wave.Asio; // For AsioOut, if ASIO support is compiled
+using NAudio.Wave.Asio;
 #endif
 
 namespace AudioMonitor.Core.Services
@@ -33,7 +33,6 @@ namespace AudioMonitor.Core.Services
         {
             var devices = new List<AudioDevice>();
             var enumerator = new MMDeviceEnumerator();
-            
             // Enumerate WASAPI Capture Devices
             try
             {
@@ -56,9 +55,8 @@ namespace AudioMonitor.Core.Services
                 Log.Error("Error enumerating WASAPI input devices.", ex);
             }
 
-            // Placeholder for future ASIO support
-            #if ASIO_SUPPORT
-            /*
+#if ASIO_SUPPORT
+            // Enumerate ASIO Drivers
             try
             {
                 var asioDriverNames = AsioOut.GetDriverNames();
@@ -66,25 +64,20 @@ namespace AudioMonitor.Core.Services
                 for (int i = 0; i < asioDriverNames.Length; i++)
                 {
                     string driverName = asioDriverNames[i];
-                    // ASIO devices don't have a standard ID like MMDevice.ID here.
-                    // The driver name itself is the identifier.
-                    // You might need a different way to structure 'AudioDevice' or handle ASIO IDs.
                     bool isFocusrite = driverName.ToLowerInvariant().Contains("focusrite");
                     devices.Add(new AudioDevice {
                         Name = $"ASIO: {driverName}",
-                        Id = $"ASIO:{driverName}", // Composite ID for uniqueness
-                        IsFocusrite = isFocusrite 
+                        Id = $"ASIO:{driverName}",
+                        IsFocusrite = isFocusrite
                     });
-                     Log.Info($"ASIO Driver {i}: Name='{driverName}', IsFocusrite={isFocusrite}");
+                    Log.Info($"ASIO Driver {i}: Name='{driverName}', IsFocusrite={isFocusrite}");
                 }
             }
             catch (Exception ex)
             {
                 Log.Error("Error enumerating ASIO drivers. Ensure ASIO drivers are installed.", ex);
             }
-            */
-            #endif
-
+#endif
             if (!devices.Any())
             {
                 Log.Info("No active input devices found. For microphone input, ensure it's enabled and not exclusively used by another application.");
@@ -100,6 +93,40 @@ namespace AudioMonitor.Core.Services
                 return;
             }
 
+#if ASIO_SUPPORT
+            if (deviceId != null && deviceId.StartsWith("ASIO:"))
+            {
+                string driverName = deviceId.Substring(5);
+                try
+                {
+                    var asio = new AsioOut(driverName);
+                    _capture = asio;
+                    asio.AudioAvailable += (s, e) =>
+                    {
+                        // e.Samples is float[]
+                        float maxSample = 0f;
+                        foreach (var sample in e.Samples)
+                        {
+                            float absSample = Math.Abs(sample);
+                            if (absSample > maxSample) maxSample = absSample;
+                        }
+                        if (maxSample == 0)
+                            CurrentDBFSLevel = -96.0;
+                        else
+                            CurrentDBFSLevel = 20 * Math.Log10(maxSample);
+                        LevelChanged?.Invoke(this, CurrentDBFSLevel);
+                    };
+                    asio.Play();
+                    Log.Info($"Started ASIO monitoring on driver: {driverName}");
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Failed to start ASIO monitoring on driver: {driverName}", ex);
+                    return;
+                }
+            }
+#endif
             _monitoringDeviceId = deviceId;
             
             try

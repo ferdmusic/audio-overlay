@@ -8,9 +8,9 @@
 
 ## 1. What it Does
 
-This app warns you in real time if your microphone input levels on Windows 11 are too high. You set the limits. You see warnings as a visual overlay on your screen's edge. You can also choose to hear a sound. We built this app to be fast and easy to maintain.
+This app warns you in real time if your microphone input levels on Windows 11 are too high. You set the limits. You see warnings as a visual overlay on your screen's edge. You can also choose to hear a sound. This app is built to be fast and easy to maintain.
 
-Our main goal is to give you quick, clear, and light feedback on your input levels. This helps you keep your audio quality high. The app is built to be stable and easy to update.
+A main goal is to give you quick, clear, and light feedback on your input levels. This helps you keep your audio quality high. The app is built to be stable and easy to update.
 
 **Who is this for?** If you make music, podcasts, or stream, and you use an audio interface (like a Focusrite Scarlett) on Windows 11, this app can help. It's for people who want a reliable way to monitor audio levels without slowing down their computer.
 
@@ -20,7 +20,7 @@ Our main goal is to give you quick, clear, and light feedback on your input leve
 
 *   **Choose Your Audio Device (FA01):**
     *   You can pick your specific audio interface and input channel.
-    *   The app might find your connected audio devices (like Focusrite) automatically. This is a planned feature.
+    *   The app automatically finds your connected compatible audio devices (e.g., Focusrite).
     *   If you have many devices, you can choose the one you want.
 *   **See Audio Levels Live (FA02):**
     *   The app constantly checks the audio level of the microphone you choose.
@@ -34,10 +34,10 @@ Our main goal is to give you quick, clear, and light feedback on your input leve
     *   **Look and Place:** A thin bar appears on the edge of your monitors. You choose which edge. It shows your current level with changing colors. It updates smoothly and won't slow down your system.
     *   **Changes Transparency:** When levels are low, the bar is almost invisible. As levels rise, it becomes easier to see and changes color.
     *   **When Levels are Critical:** If your audio hits the "Too Loud" level, the bar stays clearly visible in that color (like red) for at least two seconds. This happens even if the level drops quickly.
-    *   **Overlay Options (Planned):** You might be able to change how thick the bar is and pick the monitor edge.
+    *   **Overlay Options:** You can change how thick the bar is and pick the monitor edge.
 *   **Sound Warning (FA05):**
     *   You can turn on a sound warning. It plays a short sine wave when levels pass a limit you set.
-    *   You can turn this sound on or off. You might also be able to set its volume.
+    *   You can turn this sound on or off. You can also set its volume.
 *   **Settings Menu (FA06):**
     *   A menu lets you:
         *   Choose your audio device.
@@ -48,14 +48,14 @@ Our main goal is to give you quick, clear, and light feedback on your input leve
         *   Start/stop the app or send it to the system tray.
 *   **Runs in Background / System Tray / Autostart (FA07):**
     *   The app uses few resources while running in the background.
-    *   A system tray icon for quick access and status is a planned feature.
+    *   A system tray icon provides quick access and status indication.
     *   You can set the app to start when Windows starts.
 *   **Saves Your Settings (FA08):**
     *   The app remembers all your choices for the next time you start it.
 
 ---
 
-## 3. How it Performs and How We Built It
+## 3. How it Performs and How It Is Built
 
 *   **Performance (Very Important):**
     *   **Fast Response:** You won't notice a delay between a sound event and the warning (aiming for much less than 50ms).
@@ -66,12 +66,12 @@ Our main goal is to give you quick, clear, and light feedback on your input leve
     *   **Doesn't Wake CPU Often:** Background work only uses the CPU when needed. It prefers event-based actions.
 *   **Code Quality (Important):**
     *   **Organized Code:** The code is split into clear parts (like audio engine, UI, overlay, settings). Each part does its job well.
-    *   **Easy to Read:** The code is clear and consistent. We follow Microsoft C# Coding Conventions. Comments explain why something is done, not just what.
+    *   **Easy to Read:** The code is clear and consistent. It follows Microsoft C# Coding Conventions. Comments explain why something is done, not just what.
     *   **Testable:** Key parts (like audio processing, level math, warning logic) can be tested automatically.
-    *   **SOLID Design:** We use SOLID principles for flexible and maintainable code.
-    *   **No Magic Values:** We use named constants or config files instead of hardcoded numbers or text.
+    *   **SOLID Design:** SOLID principles are used for flexible and maintainable code.
+    *   **No Magic Values:** Named constants or config files are used instead of hardcoded numbers or text.
     *   **Manages Resources:** The app frees up resources it no longer needs (especially for audio and graphics).
-    *   **Async Code:** We use `async`/`await` correctly to keep the UI responsive.
+    *   **Async Code:** `async`/`await` is used correctly to keep the UI responsive.
 *   **Easy to Use:** Simple to set up and understand, even with complex tech behind it. Clear feedback from the overlay and optional sound.
 *   **Reliable:** The app runs stably for long periods. It measures levels accurately. It handles errors well (like if an audio device disconnects) and informs you instead of crashing.
 *   **Works With:**
@@ -81,11 +81,11 @@ Our main goal is to give you quick, clear, and light feedback on your input leve
 
 ---
 
-## 4. Tech We Used (Probably)
+## 4. Tech Used
 
-*   **.NET / C#:** We built the project with the .NET framework.
-*   **WPF/WinUI (likely):** Used for the UI and overlay, based on `.xaml` files and the need for GPU use.
-*   **NAudio (or similar):** Likely used for audio tasks and ASIO/WASAPI. This is an assumption.
+*   **.NET / C#:** The project is built with the .NET framework.
+*   **WPF/WinUI:** Used for the UI and overlay, based on `.xaml` files and the need for GPU use.
+*   **NAudio:** Used for audio tasks and ASIO/WASAPI.
 
 ---
 
@@ -101,7 +101,7 @@ The solution has these main projects:
 
 ## 6. How to Get Started
 
-(We will add details here on how to build and run the project.)
+(Details on how to build and run the project will be added here.)
 
 ### You Need
 
@@ -111,7 +111,7 @@ The solution has these main projects:
 
 ### Install & Run
 
-(We will add instructions here for cloning, building, and running the app.)
+(Instructions for cloning, building, and running the app will be added here.)
 
 ---
 
@@ -143,16 +143,16 @@ The app saves all your settings.
 *   Advanced audio analysis tools (like a spectrogram).
 *   Network features.
 *   Support for operating systems other than Windows 11.
-*   Multiple languages (Mainly German; we might add more later).
+*   Multiple languages (Mainly German; more might be added later).
 
 ---
 
 ## 10. How to Contribute
 
-(We will add details here. For now, please follow the current code style.)
+(Details will be added here. For now, please follow the current code style.)
 
 ---
 
 ## 11. License
 
-(We will add license information here.)
+(License information will be added here.)

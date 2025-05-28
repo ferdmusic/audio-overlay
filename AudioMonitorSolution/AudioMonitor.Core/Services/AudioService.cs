@@ -241,7 +241,9 @@ namespace AudioMonitor.Core.Services
         {
             if (_asioOutDevice == null) return;
 
+feature/internationalization
             int samplesToProcess = e.SamplesPerBuffer * _asioOutDevice.RecordChannelCount;
+
 
             if (samplesToProcess == 0)
             {

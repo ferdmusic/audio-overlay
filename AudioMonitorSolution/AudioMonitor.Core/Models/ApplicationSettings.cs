@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace AudioMonitor.Core.Models
 {
     public enum OverlayEdge
@@ -11,6 +13,7 @@ namespace AudioMonitor.Core.Models
     public class ApplicationSettings
     {
         public string? SelectedAudioDeviceId { get; set; }
+        public string LanguageCode { get; set; }
         public OverlayEdge OverlayPosition { get; set; }
         public int OverlayThickness { get; set; } // Changed from OverlayHeight
         public bool AcousticWarningEnabled { get; set; }
@@ -36,6 +39,17 @@ namespace AudioMonitor.Core.Models
             ThresholdSafe = -12;
             ThresholdWarning = -6;
             ThresholdCritical = -3;
+
+            // Language selection
+            var currentCulture = CultureInfo.CurrentUICulture.Name;
+            if (currentCulture.StartsWith("de", StringComparison.OrdinalIgnoreCase))
+            {
+                this.LanguageCode = "de-DE";
+            }
+            else
+            {
+                this.LanguageCode = "en-US";
+            }
         }
 
         public static ApplicationSettings GetDefault()
@@ -52,8 +66,19 @@ namespace AudioMonitor.Core.Models
                 // Default threshold values
                 ThresholdSafe = -12,
                 ThresholdWarning = -6,
-                ThresholdCritical = -3
+                ThresholdCritical = -3,
             };
+
+            // Language selection
+            var currentCulture = CultureInfo.CurrentUICulture.Name;
+            if (currentCulture.StartsWith("de", StringComparison.OrdinalIgnoreCase))
+            {
+                settings.LanguageCode = "de-DE";
+            }
+            else
+            {
+                settings.LanguageCode = "en-US";
+            }
             return settings;
         }
     }

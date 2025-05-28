@@ -27,6 +27,22 @@ This app warns you in real time if your microphone input levels on Windows 11 ar
 
 ---
 
+## Language Settings
+
+The AudioMonitor application supports multiple languages for the user interface. Currently available languages are:
+
+*   English (Default)
+*   German
+
+To change the language:
+1.  Open the **Settings** window.
+2.  Locate the **Language** dropdown menu.
+3.  Select your preferred language (English or Deutsch).
+4.  Click **Save Settings**.
+5.  **Important:** You will need to restart AudioMonitor for the language change to take full effect.
+
+---
+
 ## 3. Performance & Design
 
 *   **Performance:**

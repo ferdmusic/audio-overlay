@@ -99,8 +99,7 @@ If you run into problems:
 
 ## 📜 License
 
-This project is provided with the intention of being freely used, modified, and distributed. The author expresses no specific restrictions ("I don't care what people do with the software").
-If a formal declaration is desired for your purposes, consider this project under a highly permissive open-source license like **The Unlicense** or **MIT License**. The project owner may choose to add a formal `LICENSE` file in the future.
+MIT
 
 ## ⭐ Support
 

@@ -8,9 +8,18 @@ using System.Collections.Generic; // Required for List<T>
 using System.Collections.ObjectModel; // Required for ObservableCollection
 using System.Windows.Data; // Required for CollectionViewSource
 using System.Globalization;
+using AudioMonitor.UI.Properties;
 
 namespace AudioMonitor.UI.Views
 {
+    public class LanguageItem
+    {
+        public string Name { get; set; } // e.g., "English"
+        public string Code { get; set; } // e.g., "en-US"
+
+        public override string ToString() => Name; // Optional: For simple display if not using DisplayMemberPath
+    }
+
     public partial class SettingsWindow : Window
     {
         private readonly AudioService _audioService;
@@ -69,10 +78,38 @@ namespace AudioMonitor.UI.Views
                 // Set Acoustic Volume Slider and Text
                 AcousticVolumeSlider.Value = CurrentSettings.AcousticWarningVolume * 100;
                 AcousticVolumeText.Text = $"{AcousticVolumeSlider.Value}%";
+
+                // Populate Language ComboBox
+                var languages = new List<LanguageItem>
+                {
+                    new LanguageItem { Name = "English", Code = "en-US" },
+                    new LanguageItem { Name = "Deutsch", Code = "de-DE" }
+                };
+                LanguageComboBox.ItemsSource = languages;
+                LanguageComboBox.DisplayMemberPath = "Name"; // Tell ComboBox to display the Name property
+                LanguageComboBox.SelectedValuePath = "Code";   // Tell ComboBox the value is from the Code property
+
+                // Set current selection
+                if (!string.IsNullOrEmpty(CurrentSettings.LanguageCode))
+                {
+                    var currentLanguageItem = languages.FirstOrDefault(lang => lang.Code == CurrentSettings.LanguageCode);
+                    if (currentLanguageItem != null)
+                    {
+                        LanguageComboBox.SelectedItem = currentLanguageItem;
+                    }
+                    else // Fallback if saved code is somehow not in our list
+                    {
+                        LanguageComboBox.SelectedItem = languages.FirstOrDefault(lang => lang.Code == "en-US");
+                    }
+                }
+                else // Default to English if no language code is set in settings
+                {
+                    LanguageComboBox.SelectedItem = languages.FirstOrDefault(lang => lang.Code == "en-US");
+                }
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error in SettingsWindow constructor: {ex.Message}\n\nStack trace:\n{ex.StackTrace}", "SettingsWindow Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(string.Format(Strings.SettingsWindowErrorMessage, ex.Message, ex.StackTrace), Strings.SettingsWindowErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
         }
@@ -102,6 +139,21 @@ namespace AudioMonitor.UI.Views
             CurrentSettings.AcousticWarningEnabled = AcousticWarningsCheckBox.IsChecked == true; // Changed from EnableAcousticWarningsCheckBox
             CurrentSettings.AcousticWarningVolume = AcousticVolumeSlider.Value / 100.0;
 
+            string originalLanguageCode = CurrentSettings.LanguageCode;
+            if (LanguageComboBox.SelectedItem is LanguageItem selectedLangItem)
+            {
+                CurrentSettings.LanguageCode = selectedLangItem.Code;
+            }
+
+            // Check if language changed and inform user about restart
+            if (CurrentSettings.LanguageCode != originalLanguageCode)
+            {
+                MessageBox.Show(Strings.LanguageChangedMessage, 
+                                Strings.LanguageChangedTitle, 
+                                MessageBoxButton.OK, 
+                                MessageBoxImage.Information);
+            }
+
             DialogResult = true;
             Close();
         }
@@ -111,7 +163,7 @@ namespace AudioMonitor.UI.Views
             SaveSettings_Click(sender, e); 
             // Actual monitoring start logic would be handled by the main application controller/viewmodel after settings are saved and this window closes.
             // For now, this button primarily ensures settings are saved before the user expects monitoring to reflect new settings.
-            System.Windows.MessageBox.Show("Monitoring will start with the new settings after this window is closed.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+            System.Windows.MessageBox.Show(Strings.MonitoringInfoMessage, Strings.MonitoringInfoTitle, MessageBoxButton.OK, MessageBoxImage.Information);
         }        private void MinimizeToTray_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
@@ -144,12 +196,12 @@ namespace AudioMonitor.UI.Views
             {
                 return deviceType switch
                 {
-                    AudioDeviceType.WASAPI => "WASAPI Devices",
-                    AudioDeviceType.ASIO => "ASIO Devices",
-                    _ => "Other Devices"
+                    AudioDeviceType.WASAPI => Strings.DeviceTypeWASAPI,
+                    AudioDeviceType.ASIO => Strings.DeviceTypeASIO,
+                    _ => Strings.DeviceTypeOther
                 };
             }
-            return "Unknown";
+            return Strings.DeviceTypeUnknown;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

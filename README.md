@@ -1,119 +1,111 @@
-# Audio Level Monitor
-
 <p align="center">
   <img src="AudioMonitorSolution/image.ico" alt="Audio Level Monitor Icon" width="128"/>
 </p>
 
-**Version:** 1.2
+# 🎵 Audio Overlay
 
-## 1. What it Does
+A simple Windows application for audio monitoring and overlay functionality.
 
-This app warns you in real time if your microphone input levels on Windows 11 are too high. You set the limits. Warnings appear as a visual overlay on your screen's edge, with an optional sound alert. The app is built for speed and easy maintenance, providing quick, clear feedback to help you maintain audio quality.
+## 📥 Download
 
-**Who is this for?** Musicians, podcasters, streamers, or anyone using an audio interface (e.g., Focusrite Scarlett) on Windows 11 who needs reliable, low-impact audio level monitoring.
+**[Latest Release (v1.0.0)](https://github.com/ferdmusic/audio-overlay/releases/latest)** - Download `AudioMonitor-Windows-x64.exe`
 
----
+## 🛡️ Security Notice - SmartScreen Warning
 
-## 2. Core Features
+**tl;dr: This app is safe, but Windows doesn't know that yet.**
 
-*   **Device Selection:** Pick your audio interface and input channel. Automatic detection of compatible devices.
-*   **Real-time Metering:** See live audio levels in dBFS.
-*   **Custom Warnings:** Define level stages ("Safe," "Caution," "Too Loud") with dBFS thresholds and corresponding overlay colors (e.g., green to yellow to red).
-*   **Visual Overlay:** A thin, customizable bar on your chosen monitor edge shows levels with color and transparency changes. Critical levels remain visible for at least two seconds.
-*   **Acoustic Alert:** Optional sine wave sound when levels exceed your set limit.
-*   **Settings UI:** Manage all configurations, including autostart.
-*   **Background Operation:** Runs efficiently in the background with a system tray icon for quick access.
-*   **Persistent Settings:** Your configurations are saved.
+When you download and run this app, Windows will probably show you a scary red warning saying "Windows protected your PC" (or in German: "Der Computer wurde durch Windows geschützt"). **This is a false positive** - the app is totally safe.
 
----
+### Why does this happen?
+- Windows SmartScreen doesn't trust apps without expensive certificates ($250-700/year)
+- New apps need to build "reputation" over time
+- It's super common for indie/open-source software
 
-## Language Settings
+### Proof it's safe
+🔗 **[VirusTotal Scan Results](https://www.virustotal.com/gui/file/2575644b699e69f107f43817cdb0e7f73c53e1787ce216af7ddbf40ebdd8daf5/detection)** - Only 2/71 security vendors flag it (clear false positive)
 
-The AudioMonitor application supports multiple languages for the user interface. Currently available languages are:
+### How to run it anyway
+**Option 1:** Click "More info" → "Run anyway" when the warning pops up
 
-*   English (Default)
-*   German
+**Option 2:** Right-click the `.exe` file → Properties → Check "Unblock" → OK
 
-To change the language:
-1.  Open the **Settings** window.
-2.  Locate the **Language** dropdown menu.
-3.  Select your preferred language (English or Deutsch).
-4.  Click **Save Settings**.
-5.  **Important:** You will need to restart AudioMonitor for the language change to take full effect.
+## 🚀 What does it do?
 
----
+Audio Overlay is a Windows application designed for real-time monitoring of your microphone's input levels. It's particularly useful for ensuring your audio doesn't clip or stay too quiet, providing immediate visual feedback. While it works with any compatible audio input, it has been developed with Focusrite Scarlett interfaces in mind.
 
-## 3. Performance & Design
+Key features:
+* **Visual Level Meter:** Displays a configurable colored bar overlay on the edge of your monitor(s). The color and opacity of the bar change dynamically based on the audio input level relative to defined thresholds.
+* **Configurable Thresholds:** Set dBFS levels for "Safe," "Warning," and "Critical" audio states to customize the visual feedback.
+* **Multi-Monitor Support:** Overlays can be displayed on all connected monitors.
+* **Acoustic Alerts:** Optionally, enable an acoustic sine wave warning when audio levels reach the "Critical" threshold.
+* **Audio Source Flexibility:** Supports both WASAPI and ASIO (if ASIO drivers are present and `ASIO_SUPPORT` was enabled at compile-time) audio inputs.
+* **Customization:** Adjust overlay position, thickness, acoustic warning volume, and application language (English/German).
+* **Autostart:** Configure the application to start automatically with Windows.
+* **Tray Control:** Minimizes to the system tray with options to show the main window, open settings, reset settings, or exit the application.
 
-*   **Performance:**
-    *   **Low Latency:** Visual/acoustic response aims for <<50ms.
-    *   **Minimal CPU/Memory Usage:** Designed to not impact other applications.
-    *   **Smooth Visuals:** Fluid overlay animations.
-    *   **GPU Accelerated Rendering:** Uses DirectX interop with WPF for efficiency.
-*   **Code Quality:**
-    *   **Modular:** Clear separation into Core, OverlayRendering, and UI logic.
-    *   **Readable & Maintainable:** Follows C# conventions, with SOLID principles.
-    *   **Testable:** Core components are designed for automated testing.
+The application aims to provide immediate, precise, and resource-efficient audio level feedback.
 
----
+## 💻 System Requirements
 
-## 4. Tech Stack
+* **Operating System:** Windows (x64)
+* **.NET:** .NET 8.0 Runtime (the provided executable is self-contained, but .NET 8.0 is the target framework)
+* **Audio Interface:** Any Windows-compatible audio input device (e.g., Focusrite Scarlett, other microphones).
+* **Drivers:** WASAPI (standard Windows audio) or ASIO drivers (for lower latency, if supported by your device and `ASIO_SUPPORT` was enabled at compile-time).
 
-*   **.NET / C#**
-*   **WPF:** For the user interface and overlay rendering (`OverlayWindow.xaml`).
-*   **NAudio (or similar):** For audio processing (ASIO/WASAPI interaction, `AudioService.cs`).
+## 🔧 Usage
 
----
+1.  **Download and Run:**
+    * Download `AudioMonitor-Windows-x64.exe` from the [Latest Release](https://github.com/ferdmusic/audio-overlay/releases/latest).
+    * Run the executable. You might encounter the SmartScreen warning mentioned above; follow the steps to run it.
 
-## 5. Project Structure
+2.  **Main Window & Tray Icon:**
+    * The application may open a small main window or start minimized to the system tray.
+    * The main window allows for quick audio device selection and shows the current monitoring status.
+    * Right-click the tray icon for options:
+        * **Show:** Opens the main application window.
+        * **Settings:** Opens the settings window.
+        * **Reset Settings:** Resets all settings to their default values after confirmation.
+        * **Exit:** Closes the application completely.
+    * The tray icon's tooltip also indicates the current status (e.g., Monitoring, Paused, Critical).
 
-*   `AudioMonitor.Core`: Core logic (audio analysis via `LevelAnalyzer.cs`, settings via `SettingsService.cs`).
-*   `AudioMonitor.OverlayRenderer`: Handles the visual overlay display.
-*   `AudioMonitor.UI`: Main application, settings window (`App.xaml`), and autostart (`AutostartService.cs`).
+3.  **Configuring Settings:**
+    * Open the Settings window via the tray icon menu or a button in the main window (if available).
+    * **Audio Input Device:** Select your microphone or audio interface from the list. *See Known Issues below.*
+    * **Overlay Position:** Choose which edge of the screen(s) the overlay bar will appear on (Top, Bottom, Left, Right).
+    * **Overlay Thickness:** Set the thickness of the overlay bar in pixels.
+    * **dBFS Thresholds:** Define the audio levels (in dBFS) for "Safe," "Warning," and "Critical" states. The overlay will change color based on these.
+    * **Acoustic Warnings:**
+        * Enable or disable an audible beep/sine wave when the audio level hits "Critical".
+        * Adjust the volume of this warning sound.
+    * **Autostart with Windows:** Check this to have Audio Overlay launch when you log into Windows.
+    * **Language:** Choose between English and German. A restart might be prompted or required for the change to fully take effect.
+    * Click **Save Settings** to apply your changes.
 
----
+4.  **Monitoring:**
+    * Once configured, the overlay bar(s) will appear on the selected edge of your screen(s).
+    * The bar's color and opacity will change based on the live audio input level relative to your set thresholds. If levels become critical, the overlay becomes fully opaque and remains so for at least two seconds.
 
-## 6. Getting Started
+## ✨ Known Issues
 
-(Build and run instructions to be added.)
+* **Device Selection in Settings:** Audio device selection made within the Settings window might not apply correctly or immediately. For reliable audio device switching, please use the device selector dropdown on the main application window.
 
-**Prerequisites:**
-*   Windows 11
-*   .NET SDK (see `global.json`)
-*   Compatible audio interface + drivers
+## 🐛 Issues?
 
----
+If you run into problems:
+- Check the [Known Issues](#known-issues) section above.
+- Check the [Issues](https://github.com/ferdmusic/audio-overlay/issues) page on GitHub.
+- Create a new issue if your problem isn't listed.
+- Please include your Windows version, what audio device you are using, and what you were trying to do when the problem occurred.
 
-## 7. Configuration
+## 📜 License
 
-Access all settings through the app menu: audio device, warning levels/colors, overlay position/behavior, acoustic alerts, and autostart.
+This project is provided with the intention of being freely used, modified, and distributed. The author expresses no specific restrictions ("I don't care what people do with the software").
+If a formal declaration is desired for your purposes, consider this project under a highly permissive open-source license like **The Unlicense** or **MIT License**. The project owner may choose to add a formal `LICENSE` file in the future.
 
----
+## ⭐ Support
 
-## 8. Use Cases
-
-1.  **Initial Setup:** Configure audio source, levels, overlay, and autostart.
-2.  **Monitoring:** Observe overlay changes and hear alerts as levels fluctuate.
-3.  **Adjust Settings:** Modify thresholds as needed via the settings menu.
-
----
-
-## 9. Out of Scope (V1.0)
-
-*   Audio recording/editing.
-*   Advanced audio analysis (spectrograms).
-*   Network features.
-*   Non-Windows 11 OS support.
-*   Multi-language (currently German-focused, with future internationalization in mind).
-
----
-
-## 10. Contributing
-
-(Contribution guidelines to be added. Please adhere to existing code style.)
+If this helped you out, consider giving it a star on GitHub! It helps other people find the project.
 
 ---
 
-## 11. License
-
-(License information to be added.)
+*Made with ☕ by [ferdmusic](https://github.com/ferdmusic)*

@@ -36,6 +36,7 @@ namespace AudioMonitor.Core.Services
         private IWaveIn? _waveInDevice; // Renamed from _capture for clarity
 #if ASIO_SUPPORT
         private AsioOut? _asioOutDevice; // For ASIO operations
+        private float[]? _asioSampleBuffer; // Buffer for ASIO samples
 #endif
         private string? _monitoringDeviceId;
         // private float[]? _asioBuffer; // CS0169: Field is never used. Commenting out for now
@@ -240,20 +241,26 @@ namespace AudioMonitor.Core.Services
         {
             if (_asioOutDevice == null) return;
 
-            // Get samples as interleaved floats. This is often the easiest way to process.
-            float[] samples = e.GetAsInterleavedSamples();
+            int samplesToProcess = e.SamplesPerBuffer * _asioOutDevice.RecordChannelCount;
 
-            if (samples.Length == 0)
+            if (samplesToProcess == 0)
             {
                 CurrentDBFSLevel = -96.0;
                 LevelChanged?.Invoke(this, CurrentDBFSLevel);
                 return;
             }
 
-            float maxSample = 0f;
-            for (int i = 0; i < samples.Length; i++)
+            if (_asioSampleBuffer == null || _asioSampleBuffer.Length < samplesToProcess)
             {
-                float absSample = Math.Abs(samples[i]);
+                _asioSampleBuffer = new float[samplesToProcess];
+            }
+
+            e.GetAsInterleavedSamples(_asioSampleBuffer);
+
+            float maxSample = 0f;
+            for (int i = 0; i < samplesToProcess; i++)
+            {
+                float absSample = Math.Abs(_asioSampleBuffer[i]); // Use the class member buffer
                 if (absSample > maxSample)
                 {
                     maxSample = absSample;

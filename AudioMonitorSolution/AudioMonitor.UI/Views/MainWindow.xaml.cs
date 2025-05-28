@@ -17,6 +17,7 @@ using System.Windows.Data;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO; // Required for Path operations
+using AudioMonitor.UI.Properties;
 // We might need System.Drawing if we directly use System.Drawing.Rectangle, but Screen.Bounds is already that.
 
 namespace AudioMonitor.UI.Views
@@ -107,8 +108,8 @@ namespace AudioMonitor.UI.Views
 
         private void ResetSettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("Are you sure you want to reset all settings to their default values?",
-                                "Reset Settings", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            if (MessageBox.Show(Strings.ResetSettingsConfirmMessage,
+                                Strings.ResetSettingsConfirmTitle, MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 if (_settingsService != null && _appSettings != null)
                 {
@@ -170,7 +171,7 @@ namespace AudioMonitor.UI.Views
                     InitializeOverlays(); // Re-initialize overlays
                     AutostartService.SetAutostart(_appSettings.AutostartEnabled);
 
-                    MessageBox.Show("Settings have been reset to default.", "Settings Reset", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show(Strings.ResetSettingsSuccessMessage, Strings.ResetSettingsSuccessTitle, MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
         }
@@ -206,7 +207,7 @@ namespace AudioMonitor.UI.Views
             // Programmatically add "Reset Settings" menu item
             if (_myNotifyIcon != null && _myNotifyIcon.ContextMenu != null)
             {
-                var resetSettingsMenuItem = new System.Windows.Controls.MenuItem { Header = "Reset Settings" };
+                var resetSettingsMenuItem = new System.Windows.Controls.MenuItem { Header = Strings.TrayMenuResetSettings };
                 resetSettingsMenuItem.Click += ResetSettingsMenuItem_Click;
 
                 // Insert before the "Exit" item, or at a specific position
@@ -245,7 +246,7 @@ namespace AudioMonitor.UI.Views
 
             if (_appSettings == null) // Should not happen if GetDefault works
             {
-                MessageBox.Show("Failed to load application settings. Application might not work correctly.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Strings.LoadSettingsErrorMessage, Strings.LoadSettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 // Consider closing or using hardcoded defaults
                 _appSettings = ApplicationSettings.GetDefault(); 
             }            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
@@ -438,18 +439,21 @@ namespace AudioMonitor.UI.Views
 
             if (!isMonitoring)
             {
-                _myNotifyIcon.ToolTipText = "AudioMonitor (Paused)";
+                _myNotifyIcon.ToolTipText = Strings.ToolTipPaused;
+                StatusTextBlock.Text = $"{Strings.StatusLabel} {Strings.StatusPaused}";
                 // TODO: Update _myNotifyIcon.IconSource for paused state if a specific icon is available
                 // Example: _myNotifyIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/YourAppAssemblyName;component/Resources/icon_paused.ico"));
             }
             else if (isCritical)
             {
-                _myNotifyIcon.ToolTipText = "AudioMonitor (CRITICAL!)";
+                _myNotifyIcon.ToolTipText = Strings.ToolTipCritical;
+                StatusTextBlock.Text = $"{Strings.StatusLabel} {Strings.StatusCritical}"; // Assuming StatusCritical exists or use Monitoring
                 // TODO: Update _myNotifyIcon.IconSource for critical state
             }
             else
             {
-                _myNotifyIcon.ToolTipText = "AudioMonitor (Monitoring)";
+                _myNotifyIcon.ToolTipText = Strings.ToolTipMonitoring;
+                StatusTextBlock.Text = $"{Strings.StatusLabel} {Strings.StatusMonitoring}";
                 // TODO: Update _myNotifyIcon.IconSource for normal monitoring state (back to default)
             }
         }        public void ShowSettings()
@@ -464,14 +468,14 @@ namespace AudioMonitor.UI.Views
             catch (System.Text.Json.JsonException ex)
             {
                 Core.Logging.Log.Error("Failed to clone application settings for SettingsWindow.", ex);
-                MessageBox.Show("Error preparing settings. Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Strings.PrepareSettingsErrorMessage, Strings.PrepareSettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             if (settingsCopy == null)
             {
                 Core.Logging.Log.Error("Failed to clone application settings (result was null).");
-                MessageBox.Show("Error preparing settings. Please try again.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Strings.CloneSettingsErrorMessage, Strings.CloneSettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -482,7 +486,7 @@ namespace AudioMonitor.UI.Views
             catch (Exception ex)
             {
                 Core.Logging.Log.Error("Failed to create SettingsWindow.", ex);
-                MessageBox.Show($"Error creating settings window: {ex.Message}", "Settings Window Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(Strings.CreateSettingsWindowErrorMessage, ex.Message), Strings.CreateSettingsWindowErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -494,7 +498,7 @@ namespace AudioMonitor.UI.Views
                     if (newSettings == null)
                     {
                         Core.Logging.Log.Error("SettingsWindow returned null settings after dialog confirmation.");
-                        MessageBox.Show("Failed to apply settings. Changes may not have been saved.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(Strings.ApplySettingsErrorMessage, Strings.ApplySettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
                     _appSettings = newSettings; 
@@ -523,7 +527,7 @@ namespace AudioMonitor.UI.Views
             catch (Exception ex)
             {
                 Core.Logging.Log.Error("Error showing SettingsWindow dialog.", ex);
-                MessageBox.Show($"Error displaying settings dialog: {ex.Message}", "Settings Dialog Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(Strings.ShowSettingsDialogErrorMessage, ex.Message), Strings.ShowSettingsDialogErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

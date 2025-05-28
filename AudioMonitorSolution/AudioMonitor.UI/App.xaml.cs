@@ -5,6 +5,8 @@ using AudioMonitor.UI.Views;
 using System.Windows;
 using Application = System.Windows.Application;
 using AudioMonitor.UI.Services; // For AutostartService
+using System.Globalization;
+using System.Threading;
 
 namespace AudioMonitor.UI
 {
@@ -29,6 +31,41 @@ namespace AudioMonitor.UI
             base.OnStartup(e);
             _settingsService = new SettingsService();
             _appSettings = _settingsService.LoadApplicationSettings();
+
+            // --- Language Initialization Start ---
+            string targetLanguageCode = "en-US"; // Default to English
+
+            if (_appSettings != null && !string.IsNullOrEmpty(_appSettings.LanguageCode))
+            {
+                targetLanguageCode = _appSettings.LanguageCode;
+            }
+            // If _appSettings or LanguageCode is null/empty, it will use the "en-US" default from above.
+            // This also handles the case where ApplicationSettings might not have been loaded successfully,
+            // though _appSettings is initialized right before this potential block.
+
+            try
+            {
+                CultureInfo targetCulture = new CultureInfo(targetLanguageCode);
+                Thread.CurrentThread.CurrentUICulture = targetCulture;
+                Thread.CurrentThread.CurrentCulture = targetCulture; // Optional: Also set CurrentCulture for formatting
+            }
+            catch (CultureNotFoundException)
+            {
+                // Log this error if a logging mechanism exists. For now, fall back to en-US.
+                // Example: Core.Logging.Log.Warning($"Culture '{targetLanguageCode}' not found. Falling back to en-US.");
+                try
+                {
+                    CultureInfo fallbackCulture = new CultureInfo("en-US");
+                    Thread.CurrentThread.CurrentUICulture = fallbackCulture;
+                    Thread.CurrentThread.CurrentCulture = fallbackCulture; // Optional
+                }
+                catch (CultureNotFoundException)
+                {
+                    // This should ideally not happen for "en-US". If it does, something is seriously wrong.
+                    // Core.Logging.Log.Error($"Fallback culture 'en-US' also not found. Application may not localize correctly.");
+                }
+            }
+            // --- Language Initialization End ---
 
             // Apply Autostart setting if it was changed outside the app (e.g. manual registry edit)
             // Or, more simply, ensure the registry reflects the stored setting.

@@ -5,14 +5,16 @@
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:AudioMonitor.UI.Views"
         xmlns:p="clr-namespace:AudioMonitor.UI.Properties"
-        Title="{x:Static p:Strings.MainWindowTitle}" Height="500" Width="900"
-        MinHeight="400" MinWidth="600"
+        Title="{x:Static p:Strings.MainWindowTitle}"
+        Height="680" Width="480"
+        MinHeight="600" MinWidth="420"
         Background="Transparent"
         WindowStyle="None"
         AllowsTransparency="True"
         Icon="/image.ico"
         Closing="Window_Closing"
         MouseDown="Window_MouseDown">
+
     <Window.Resources>
         <tb:TaskbarIcon x:Name="MyNotifyIcon" x:Key="MyNotifyIconResource"
                         IconSource="/image.ico"
@@ -26,296 +28,244 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
 
-        <!-- Color Resources (matching SettingsWindow) -->
-        <SolidColorBrush x:Key="BgColorDarkest" Color="#121212"/>
-        <SolidColorBrush x:Key="BgColorDark" Color="#1e1e1e"/>
-        <SolidColorBrush x:Key="BgColorMedium" Color="#2a2a2e"/>
-        <SolidColorBrush x:Key="BgColorLightHover" Color="#38383c"/>
-        <SolidColorBrush x:Key="TextColorPrimary" Color="#e0e0e0"/>
-        <SolidColorBrush x:Key="TextColorSecondary" Color="#a0a0a0"/>
-        <SolidColorBrush x:Key="AccentColorBlue" Color="#0078d4"/>
-        <SolidColorBrush x:Key="AccentColorGreen" Color="#107c10"/>
-        <SolidColorBrush x:Key="AccentColorYellow" Color="#f0a30a"/>
-        <SolidColorBrush x:Key="AccentColorRed" Color="#d13438"/>
-        <SolidColorBrush x:Key="BorderColor" Color="#404040"/>
-        
-        <!-- Glass Effect Brushes -->
-        <SolidColorBrush x:Key="GlassBackground" Color="#03ffffff" Opacity="0.03"/>
-        <SolidColorBrush x:Key="GlassBackgroundHover" Color="#0fffffff" Opacity="0.06"/>
-        <SolidColorBrush x:Key="GlassBorder" Color="#1affffff" Opacity="0.1"/>
-        
-        <!-- Button Styles -->
-        <Style x:Key="ModernButtonStyle" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
-                            <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"
-                                            Margin="{TemplateBinding Padding}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource BgColorLightHover}"/>
-                                <Setter Property="BorderBrush" Value="#555"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <Style x:Key="PrimaryButtonStyle" BasedOn="{StaticResource ModernButtonStyle}" TargetType="Button">
-            <Setter Property="Background" Value="{StaticResource AccentColorBlue}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="BorderBrush" Value="{StaticResource AccentColorBlue}"/>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#005a9e"/>
-                    <Setter Property="BorderBrush" Value="#005a9e"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-          <!-- ComboBox Style -->
-        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
-            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="10,8"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="ItemContainerStyle">
-                <Setter.Value>
-                    <Style TargetType="ComboBoxItem">
-                        <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
-                        <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
-                        <Setter Property="Padding" Value="10,8"/>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource BgColorLightHover}"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="{StaticResource AccentColorBlue}"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ComboBox">
-                        <Grid>
-                            <ToggleButton x:Name="ToggleButton" 
-                                          Focusable="false"
-                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press"
-                                          Background="{TemplateBinding Background}"
-                                          BorderBrush="{TemplateBinding BorderBrush}"
-                                          Foreground="{TemplateBinding Foreground}">
-                                <ToggleButton.Style>
-                                    <Style TargetType="ToggleButton">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="ToggleButton">
-                                                    <Border Background="{TemplateBinding Background}" 
-                                                            BorderBrush="{TemplateBinding BorderBrush}" 
-                                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                                            CornerRadius="4">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="*" />
-                                                                <ColumnDefinition Width="Auto" />
-                                                            </Grid.ColumnDefinitions>
-                                                            <ContentPresenter Grid.Column="0"
-                                                                              HorizontalAlignment="Left"
-                                                                              VerticalAlignment="Center"
-                                                                              Margin="{TemplateBinding Padding}"
-                                                                              Content="{TemplateBinding Content}" />
-                                                            <Path Grid.Column="1"
-                                                                  x:Name="Arrow"
-                                                                  Data="M 0 0 L 4 4 L 8 0 Z"
-                                                                  Fill="{TemplateBinding Foreground}"
-                                                                  HorizontalAlignment="Center"
-                                                                  VerticalAlignment="Center"
-                                                                  Margin="0,0,8,0"/>
-                                                        </Grid>
-                                                    </Border>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Style>
-                                </ToggleButton.Style>
-                            </ToggleButton>
-                            <ContentPresenter x:Name="ContentSite"
-                                              IsHitTestVisible="False"
-                                              Content="{TemplateBinding SelectionBoxItem}"
-                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center"
-                                              HorizontalAlignment="Left" />
-                            <Popup x:Name="Popup"
-                                   Placement="Bottom"
-                                   IsOpen="{TemplateBinding IsDropDownOpen}"
-                                   AllowsTransparency="True" 
-                                   Focusable="False"
-                                   PopupAnimation="Slide">
-                                <Border x:Name="DropDownBorder"
-                                        Background="{StaticResource BgColorDark}"
-                                        BorderBrush="{StaticResource BorderColor}"
-                                        BorderThickness="1"
-                                        CornerRadius="4"
-                                        MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <ScrollViewer x:Name="ScrollViewer" SnapsToDevicePixels="True">
-                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
-                                    </ScrollViewer>
-                                </Border>
-                            </Popup>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource BgColorLightHover}"/>
-                            </Trigger>
-                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" Value="0.56"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <!-- TextBox Style -->
-        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
-            <Setter Property="Background" Value="{StaticResource BgColorMedium}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextColorPrimary}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,8"/>
-            <Setter Property="FontSize" Value="14"/>
-        </Style>        <!-- Device Type Group Converter -->
         <local:DeviceTypeGroupConverter x:Key="DeviceTypeGroupConverter"/>
     </Window.Resources>
 
-    <!-- Main Container with Glass Effect -->
-    <Border Background="{StaticResource BgColorDark}" 
-            CornerRadius="8">
+    <!-- Main Container with M3 Surface -->
+    <Border Background="{DynamicResource SurfaceBrush}"
+            CornerRadius="28">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Color="Black" Opacity="0.4"/>
+            <DropShadowEffect BlurRadius="32" ShadowDepth="0" Color="#000000" Opacity="0.5"/>
         </Border.Effect>
-        
+
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/> <!-- Header -->
-                <RowDefinition Height="*"/>    <!-- Content -->
-                <RowDefinition Height="Auto"/> <!-- Footer -->
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
-            <!-- Header -->
-            <Border Grid.Row="0" 
-                    Background="{StaticResource BgColorMedium}"
-                    BorderBrush="{StaticResource BorderColor}"
-                    BorderThickness="0,0,0,1"
-                    Padding="20,15">
+
+            <!-- Header with drag area -->
+            <Border Grid.Row="0"
+                    Background="{DynamicResource SurfaceContainerLowBrush}"
+                    CornerRadius="28,28,0,0"
+                    Padding="24,20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    
-                    <TextBlock Text="{x:Static p:Strings.MainWindowHeader}" 
-                               FontSize="20" 
-                               FontWeight="SemiBold"
-                               Foreground="{StaticResource TextColorPrimary}"
-                               VerticalAlignment="Center"/>
-                      <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="{x:Static p:Strings.SettingsButtonContent}" 
-                                Style="{StaticResource ModernButtonStyle}"
+
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="AudioMonitor"
+                                   FontFamily="{DynamicResource DisplayFont}"
+                                   FontSize="28"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource OnSurfaceBrush}"/>
+                        <TextBlock x:Name="StatusTextBlock"
+                                   Text="{x:Static p:Strings.StatusMonitoring}"
+                                   FontFamily="{DynamicResource BodyFont}"
+                                   FontSize="14"
+                                   Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                   Margin="0,4,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+                        <Button Style="{DynamicResource M3IconButton}"
                                 Click="SettingsMenuItem_Click"
-                                Margin="10,0"/>
-                        <Button Content="✕" 
-                                Style="{StaticResource ModernButtonStyle}"
+                                ToolTip="{x:Static p:Strings.SettingsButtonContent}"
+                                Margin="0,0,8,0">
+                            <Path Data="M19.14,12.94c0.04-0.31,0.06-0.63,0.06-0.94c0-0.31-0.02-0.63-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.37,4.8,11.69,4.8,12s0.02,0.63,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"
+                                  Fill="{DynamicResource OnSurfaceVariantBrush}"
+                                  Width="24" Height="24"
+                                  Stretch="Uniform"/>
+                        </Button>
+                        <Button Style="{DynamicResource M3IconButton}"
                                 Click="MinimizeToTray_Click"
-                                Width="30" Height="30"
-                                FontSize="12"/>
+                                ToolTip="{x:Static p:Strings.MinimizeToTrayButtonContent}">
+                            <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                                  Fill="{DynamicResource OnSurfaceVariantBrush}"
+                                  Width="20" Height="20"
+                                  Stretch="Uniform"/>
+                        </Button>
                     </StackPanel>
                 </Grid>
             </Border>
-            
-            <!-- Content -->
-            <Grid Grid.Row="1" Margin="20">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0"
-                          Text="{x:Static p:Strings.AudioInputDeviceLabel}" 
-                          FontSize="16" 
-                          FontWeight="SemiBold"
-                          Foreground="{StaticResource TextColorPrimary}"
-                          Margin="0,0,0,15"/>                <ComboBox Grid.Row="1"
-                         x:Name="DeviceComboBox" 
-                         Style="{StaticResource ModernComboBoxStyle}"
-                         Width="500" 
-                         Height="40"
-                         HorizontalAlignment="Left"
-                         Margin="0,0,0,20">
-                    <ComboBox.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <Border Background="{StaticResource BgColorDarkest}" 
-                                            BorderBrush="{StaticResource BorderColor}" 
-                                            BorderThickness="0,0,0,1" 
-                                            Padding="8,4">
-                                        <TextBlock Text="{Binding Converter={StaticResource DeviceTypeGroupConverter}}" 
-                                                   FontWeight="SemiBold" 
-                                                   FontSize="12" 
-                                                   Foreground="{StaticResource AccentColorBlue}"/>
-                                    </Border>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ComboBox.GroupStyle>
-                </ComboBox>
-                
-                <TextBlock Grid.Row="2"
-                          Text="{x:Static p:Strings.RunningMessage}"
-                          FontSize="14"
-                          Foreground="{StaticResource TextColorSecondary}"
-                          TextWrapping="Wrap"
-                          VerticalAlignment="Top"
-                          Margin="0,20,0,0"/>
-            </Grid>
-            
-            <!-- Footer -->
-            <Border Grid.Row="2" 
-                    Background="{StaticResource BgColorMedium}"
-                    BorderBrush="{StaticResource BorderColor}"
-                    BorderThickness="0,1,0,0"
-                    Padding="20,10">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock x:Name="StatusTextBlock" Text="{Binding StatusText, FallbackValue='Status: Monitoring'}" 
-                              FontSize="12"
-                              Foreground="{StaticResource AccentColorGreen}"
-                              VerticalAlignment="Center"
-                              Margin="0,0,15,0"/>
+
+            <!-- Main Content -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="24,16,24,24">
+
+                    <!-- Audio Device Selection Card -->
+                    <Border Style="{DynamicResource M3Card}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon Container -->
+                                <Border Background="{DynamicResource PrimaryContainerBrush}"
+                                        CornerRadius="16"
+                                        Width="48" Height="48"
+                                        Margin="0,0,16,0">
+                                    <Path Data="M12,14c1.66,0,2.99-1.34,2.99-3L15,5c0-1.66-1.34-3-3-3S9,3.34,9,5v6C9,12.66,10.34,14,12,14z M17.3,11c0,3-2.54,5.1-5.3,5.1S6.7,14,6.7,11H5c0,3.41,2.72,6.23,6,6.72V21h2v-3.28c3.28-0.48,6-3.3,6-6.72H17.3z"
+                                          Fill="{DynamicResource OnPrimaryContainerBrush}"
+                                          Width="24" Height="24"
+                                          Stretch="Uniform"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Static p:Strings.AudioInputDeviceLabel}"
+                                               FontFamily="{DynamicResource BodyFont}"
+                                               FontSize="16"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource OnSurfaceBrush}"/>
+                                    <TextBlock Text="{x:Static p:Strings.AudioInputDeviceDescription}"
+                                               FontFamily="{DynamicResource BodyFont}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                               TextWrapping="Wrap"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <ComboBox x:Name="DeviceComboBox"
+                                      Style="{DynamicResource M3ComboBox}"
+                                      DisplayMemberPath="Name">
+                                <ComboBox.GroupStyle>
+                                    <GroupStyle>
+                                        <GroupStyle.HeaderTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Converter={StaticResource DeviceTypeGroupConverter}}"
+                                                           FontWeight="Medium"
+                                                           FontSize="12"
+                                                           Foreground="{DynamicResource PrimaryBrush}"
+                                                           Margin="16,12,16,8"/>
+                                            </DataTemplate>
+                                        </GroupStyle.HeaderTemplate>
+                                    </GroupStyle>
+                                </ComboBox.GroupStyle>
+                            </ComboBox>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Live Level Indicator Card -->
+                    <Border Style="{DynamicResource M3Card}">
+                        <StackPanel>
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Icon Container -->
+                                <Border Background="{DynamicResource TertiaryContainerBrush}"
+                                        CornerRadius="16"
+                                        Width="48" Height="48"
+                                        Margin="0,0,16,0">
+                                    <Path Data="M3.5,18.49l6-6.01l4,4L22,6.92l-1.41-1.41l-7.09,7.97l-4-4L2,16.99L3.5,18.49z"
+                                          Fill="{DynamicResource OnTertiaryContainer}"
+                                          Width="24" Height="24"
+                                          Stretch="Uniform"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="{x:Static p:Strings.LiveAudioLevelDisplayHeader}"
+                                               FontFamily="{DynamicResource BodyFont}"
+                                               FontSize="16"
+                                               FontWeight="Medium"
+                                               Foreground="{DynamicResource OnSurfaceBrush}"/>
+                                    <TextBlock x:Name="CurrentLevelText"
+                                               Text="{x:Static p:Strings.CurrentLevelPlaceholder}"
+                                               FontFamily="{DynamicResource BodyFont}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                               Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Level Bar -->
+                            <Border Background="{DynamicResource SurfaceContainerHighestBrush}"
+                                    CornerRadius="12"
+                                    Height="24"
+                                    Padding="4">
+                                <Border x:Name="AudioLevelBar"
+                                        Background="{DynamicResource StatusSafeBrush}"
+                                        CornerRadius="8"
+                                        HorizontalAlignment="Left"
+                                        Width="0"/>
+                            </Border>
+
+                            <!-- Peak Level -->
+                            <TextBlock x:Name="PeakLevelText"
+                                       Text="{x:Static p:Strings.PeakLevelPlaceholder}"
+                                       FontFamily="{DynamicResource BodyFont}"
+                                       FontSize="12"
+                                       Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                       HorizontalAlignment="Right"
+                                       Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Quick Status Card -->
+                    <Border Style="{DynamicResource M3Card}"
+                            Background="{DynamicResource SurfaceContainerHighBrush}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Overlay Status -->
+                            <StackPanel HorizontalAlignment="Center" Margin="0,8">
+                                <Border Background="{DynamicResource StatusSafeBrush}"
+                                        CornerRadius="8"
+                                        Width="16" Height="16"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,0,0,8"/>
+                                <TextBlock Text="{x:Static p:Strings.OverlayActiveLabel}"
+                                           FontFamily="{DynamicResource BodyFont}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+
+                            <!-- Warning Status -->
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,8">
+                                <Border x:Name="WarningIndicator"
+                                        Background="{DynamicResource SurfaceContainerHighestBrush}"
+                                        CornerRadius="8"
+                                        Width="16" Height="16"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,0,0,8"/>
+                                <TextBlock Text="{x:Static p:Strings.AcousticWarningStatusLabel}"
+                                           FontFamily="{DynamicResource BodyFont}"
+                                           FontSize="12"
+                                           Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Info Text -->
+                    <TextBlock Text="{x:Static p:Strings.RunningMessage}"
+                               FontFamily="{DynamicResource BodyFont}"
+                               FontSize="14"
+                               Foreground="{DynamicResource OnSurfaceVariantBrush}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               Margin="16,8,16,0"
+                               Opacity="0.7"/>
+
                 </StackPanel>
-            </Border>
+            </ScrollViewer>
         </Grid>
     </Border>
 </Window>

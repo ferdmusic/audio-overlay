@@ -343,4 +343,19 @@ Stack trace:
   <data name="PeakLevelPlaceholder" xml:space="preserve">
     <value>Peak: -- dBFS</value>
   </data>
+  <data name="AudioInputDeviceDescription" xml:space="preserve">
+    <value>Select the audio input to monitor</value>
+  </data>
+  <data name="SettingsSubtitle" xml:space="preserve">
+    <value>Configure your audio monitoring preferences</value>
+  </data>
+  <data name="OverlayActiveLabel" xml:space="preserve">
+    <value>Overlay Active</value>
+  </data>
+  <data name="AcousticWarningStatusLabel" xml:space="preserve">
+    <value>Acoustic Warning</value>
+  </data>
+  <data name="AutostartDescription" xml:space="preserve">
+    <value>Launch AudioMonitor when Windows starts</value>
+  </data>
 </root>

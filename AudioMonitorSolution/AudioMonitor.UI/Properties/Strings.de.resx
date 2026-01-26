@@ -343,4 +343,19 @@ Stacktrace:
   <data name="PeakLevelPlaceholder" xml:space="preserve">
     <value>Peak: -- dBFS</value>
   </data>
+  <data name="AudioInputDeviceDescription" xml:space="preserve">
+    <value>Audioeingang zum Monitoren auswählen</value>
+  </data>
+  <data name="SettingsSubtitle" xml:space="preserve">
+    <value>Audio-Monitoring Einstellungen konfigurieren</value>
+  </data>
+  <data name="OverlayActiveLabel" xml:space="preserve">
+    <value>Overlay aktiv</value>
+  </data>
+  <data name="AcousticWarningStatusLabel" xml:space="preserve">
+    <value>Akustische Warnung</value>
+  </data>
+  <data name="AutostartDescription" xml:space="preserve">
+    <value>AudioMonitor beim Windows-Start automatisch starten</value>
+  </data>
 </root>

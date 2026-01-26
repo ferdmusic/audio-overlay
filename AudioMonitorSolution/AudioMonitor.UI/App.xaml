@@ -6,9 +6,488 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" /> -->
-                <!-- <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" /> -->
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Teal" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Material Expressive You Color System -->
+            <!-- Primary Tonal Palette -->
+            <Color x:Key="Primary">#D0BCFF</Color>
+            <Color x:Key="OnPrimary">#381E72</Color>
+            <Color x:Key="PrimaryContainer">#4F378B</Color>
+            <Color x:Key="OnPrimaryContainer">#EADDFF</Color>
+
+            <!-- Secondary Tonal Palette -->
+            <Color x:Key="Secondary">#CCC2DC</Color>
+            <Color x:Key="OnSecondary">#332D41</Color>
+            <Color x:Key="SecondaryContainer">#4A4458</Color>
+            <Color x:Key="OnSecondaryContainer">#E8DEF8</Color>
+
+            <!-- Tertiary Tonal Palette -->
+            <Color x:Key="Tertiary">#EFB8C8</Color>
+            <Color x:Key="OnTertiary">#492532</Color>
+            <Color x:Key="TertiaryContainer">#633B48</Color>
+            <Color x:Key="OnTertiaryContainer">#FFD8E4</Color>
+
+            <!-- Error Tonal Palette -->
+            <Color x:Key="Error">#F2B8B5</Color>
+            <Color x:Key="OnError">#601410</Color>
+            <Color x:Key="ErrorContainer">#8C1D18</Color>
+            <Color x:Key="OnErrorContainer">#F9DEDC</Color>
+
+            <!-- Surface Colors (Dark Theme) -->
+            <Color x:Key="Surface">#141218</Color>
+            <Color x:Key="SurfaceDim">#141218</Color>
+            <Color x:Key="SurfaceBright">#3B383E</Color>
+            <Color x:Key="SurfaceContainerLowest">#0F0D13</Color>
+            <Color x:Key="SurfaceContainerLow">#1D1B20</Color>
+            <Color x:Key="SurfaceContainer">#211F26</Color>
+            <Color x:Key="SurfaceContainerHigh">#2B2930</Color>
+            <Color x:Key="SurfaceContainerHighest">#36343B</Color>
+            <Color x:Key="OnSurface">#E6E0E9</Color>
+            <Color x:Key="OnSurfaceVariant">#CAC4D0</Color>
+            <Color x:Key="Outline">#938F99</Color>
+            <Color x:Key="OutlineVariant">#49454F</Color>
+
+            <!-- Status Colors -->
+            <Color x:Key="StatusSafe">#4CAF50</Color>
+            <Color x:Key="StatusWarning">#FF9800</Color>
+            <Color x:Key="StatusCritical">#F44336</Color>
+
+            <!-- Brushes -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+            <SolidColorBrush x:Key="OnPrimaryBrush" Color="{StaticResource OnPrimary}"/>
+            <SolidColorBrush x:Key="PrimaryContainerBrush" Color="{StaticResource PrimaryContainer}"/>
+            <SolidColorBrush x:Key="OnPrimaryContainerBrush" Color="{StaticResource OnPrimaryContainer}"/>
+
+            <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+            <SolidColorBrush x:Key="SecondaryContainerBrush" Color="{StaticResource SecondaryContainer}"/>
+            <SolidColorBrush x:Key="OnSecondaryContainerBrush" Color="{StaticResource OnSecondaryContainer}"/>
+
+            <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+            <SolidColorBrush x:Key="TertiaryContainerBrush" Color="{StaticResource TertiaryContainer}"/>
+
+            <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource Error}"/>
+            <SolidColorBrush x:Key="ErrorContainerBrush" Color="{StaticResource ErrorContainer}"/>
+
+            <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource Surface}"/>
+            <SolidColorBrush x:Key="SurfaceDimBrush" Color="{StaticResource SurfaceDim}"/>
+            <SolidColorBrush x:Key="SurfaceBrightBrush" Color="{StaticResource SurfaceBright}"/>
+            <SolidColorBrush x:Key="SurfaceContainerLowestBrush" Color="{StaticResource SurfaceContainerLowest}"/>
+            <SolidColorBrush x:Key="SurfaceContainerLowBrush" Color="{StaticResource SurfaceContainerLow}"/>
+            <SolidColorBrush x:Key="SurfaceContainerBrush" Color="{StaticResource SurfaceContainer}"/>
+            <SolidColorBrush x:Key="SurfaceContainerHighBrush" Color="{StaticResource SurfaceContainerHigh}"/>
+            <SolidColorBrush x:Key="SurfaceContainerHighestBrush" Color="{StaticResource SurfaceContainerHighest}"/>
+            <SolidColorBrush x:Key="OnSurfaceBrush" Color="{StaticResource OnSurface}"/>
+            <SolidColorBrush x:Key="OnSurfaceVariantBrush" Color="{StaticResource OnSurfaceVariant}"/>
+            <SolidColorBrush x:Key="OutlineBrush" Color="{StaticResource Outline}"/>
+            <SolidColorBrush x:Key="OutlineVariantBrush" Color="{StaticResource OutlineVariant}"/>
+
+            <SolidColorBrush x:Key="StatusSafeBrush" Color="{StaticResource StatusSafe}"/>
+            <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarning}"/>
+            <SolidColorBrush x:Key="StatusCriticalBrush" Color="{StaticResource StatusCritical}"/>
+
+            <!-- Typography -->
+            <FontFamily x:Key="DisplayFont">Segoe UI Variable Display</FontFamily>
+            <FontFamily x:Key="BodyFont">Segoe UI Variable Text</FontFamily>
+
+            <!-- M3 Expressive Card Style -->
+            <Style x:Key="M3Card" TargetType="Border">
+                <Setter Property="Background" Value="{StaticResource SurfaceContainerBrush}"/>
+                <Setter Property="CornerRadius" Value="28"/>
+                <Setter Property="Padding" Value="24"/>
+                <Setter Property="Margin" Value="0,0,0,16"/>
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Color="#000000" Opacity="0.15"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Filled Button Style -->
+            <Style x:Key="M3FilledButton" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource OnPrimaryBrush}"/>
+                <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="24,12"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#E8DEF8"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#D0BCFF"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Tonal Button Style -->
+            <Style x:Key="M3TonalButton" TargetType="Button">
+                <Setter Property="Background" Value="{StaticResource SecondaryContainerBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource OnSecondaryContainerBrush}"/>
+                <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="24,12"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="20"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#5A5465"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Outlined Button Style -->
+            <Style x:Key="M3OutlinedButton" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="Padding" Value="24,12"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="20"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#1AD0BCFF"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Icon Button Style -->
+            <Style x:Key="M3IconButton" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Foreground" Value="{StaticResource OnSurfaceVariantBrush}"/>
+                <Setter Property="Width" Value="48"/>
+                <Setter Property="Height" Value="48"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="border"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="24"
+                                    Width="{TemplateBinding Width}"
+                                    Height="{TemplateBinding Height}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="border" Property="Background" Value="#1ACAC4D0"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Toggle Switch Style -->
+            <Style x:Key="M3Switch" TargetType="CheckBox">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="CheckBox">
+                            <Grid>
+                                <Border x:Name="Track"
+                                        Width="52" Height="32"
+                                        Background="{StaticResource SurfaceContainerHighestBrush}"
+                                        BorderBrush="{StaticResource OutlineBrush}"
+                                        BorderThickness="2"
+                                        CornerRadius="16"/>
+                                <Border x:Name="Thumb"
+                                        Width="16" Height="16"
+                                        Background="{StaticResource OutlineBrush}"
+                                        CornerRadius="8"
+                                        HorizontalAlignment="Left"
+                                        Margin="8,0,0,0">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="ThumbTransform"/>
+                                    </Border.RenderTransform>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsChecked" Value="True">
+                                    <Setter TargetName="Track" Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter TargetName="Track" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter TargetName="Thumb" Property="Background" Value="{StaticResource OnPrimaryBrush}"/>
+                                    <Setter TargetName="Thumb" Property="Width" Value="24"/>
+                                    <Setter TargetName="Thumb" Property="Height" Value="24"/>
+                                    <Setter TargetName="Thumb" Property="CornerRadius" Value="12"/>
+                                    <Trigger.EnterActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="ThumbTransform"
+                                                               Storyboard.TargetProperty="X"
+                                                               To="20" Duration="0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.EnterActions>
+                                    <Trigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetName="ThumbTransform"
+                                                               Storyboard.TargetProperty="X"
+                                                               To="0" Duration="0:0:0.2">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseOut"/>
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </Trigger.ExitActions>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 ComboBox Style -->
+            <Style x:Key="M3ComboBox" TargetType="ComboBox">
+                <Setter Property="Background" Value="{StaticResource SurfaceContainerHighBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="16,14"/>
+                <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="MinHeight" Value="56"/>
+                <Setter Property="ItemContainerStyle">
+                    <Setter.Value>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+                            <Setter Property="Padding" Value="16,12"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ComboBoxItem">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#1ACAC4D0"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource SecondaryContainerBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="ComboBox">
+                            <Grid>
+                                <ToggleButton x:Name="ToggleButton"
+                                              Focusable="false"
+                                              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                              ClickMode="Press">
+                                    <ToggleButton.Style>
+                                        <Style TargetType="ToggleButton">
+                                            <Setter Property="Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="ToggleButton">
+                                                        <Border x:Name="Border"
+                                                                Background="{StaticResource SurfaceContainerHighBrush}"
+                                                                BorderBrush="{StaticResource OutlineBrush}"
+                                                                BorderThickness="1"
+                                                                CornerRadius="16">
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="48"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <ContentPresenter Grid.Column="0" Margin="16,0"/>
+                                                                <Path Grid.Column="1"
+                                                                      Data="M7,10L12,15L17,10H7Z"
+                                                                      Fill="{StaticResource OnSurfaceVariantBrush}"
+                                                                      HorizontalAlignment="Center"
+                                                                      VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource OnSurfaceBrush}"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </ToggleButton.Style>
+                                </ToggleButton>
+                                <ContentPresenter x:Name="ContentSite"
+                                                  IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  Margin="16,14"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Left"/>
+                                <Popup x:Name="Popup"
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True"
+                                       Focusable="False"
+                                       PopupAnimation="Slide">
+                                    <Border x:Name="DropDownBorder"
+                                            Background="{StaticResource SurfaceContainerBrush}"
+                                            CornerRadius="16"
+                                            Margin="8"
+                                            MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="16" ShadowDepth="4" Color="#000000" Opacity="0.3"/>
+                                        </Border.Effect>
+                                        <ScrollViewer SnapsToDevicePixels="True" Margin="0,8">
+                                            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 TextBox Style -->
+            <Style x:Key="M3TextField" TargetType="TextBox">
+                <Setter Property="Background" Value="{StaticResource SurfaceContainerHighBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource OnSurfaceBrush}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource OutlineBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Padding" Value="16,14"/>
+                <Setter Property="FontFamily" Value="{StaticResource BodyFont}"/>
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="MinHeight" Value="56"/>
+                <Setter Property="CaretBrush" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border x:Name="Border"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="16">
+                                <ScrollViewer x:Name="PART_ContentHost"
+                                              Margin="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource OnSurfaceBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsFocused" Value="True">
+                                    <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                                    <Setter TargetName="Border" Property="BorderThickness" Value="2"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <!-- M3 Slider Style -->
+            <Style x:Key="M3Slider" TargetType="Slider">
+                <Setter Property="Background" Value="{StaticResource SurfaceContainerHighestBrush}"/>
+                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                <Setter Property="Height" Value="40"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Slider">
+                            <Grid>
+                                <Border x:Name="TrackBackground"
+                                        Height="4"
+                                        Background="{StaticResource SurfaceContainerHighestBrush}"
+                                        CornerRadius="2"
+                                        VerticalAlignment="Center"/>
+                                <Canvas x:Name="PART_Canvas" VerticalAlignment="Center">
+                                    <Border x:Name="PART_SelectionRange"
+                                            Height="4"
+                                            Background="{StaticResource PrimaryBrush}"
+                                            CornerRadius="2"/>
+                                </Canvas>
+                                <Track x:Name="PART_Track">
+                                    <Track.Thumb>
+                                        <Thumb>
+                                            <Thumb.Style>
+                                                <Style TargetType="Thumb">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Thumb">
+                                                                <Grid>
+                                                                    <Ellipse x:Name="HoverRing"
+                                                                             Width="40" Height="40"
+                                                                             Fill="Transparent"/>
+                                                                    <Ellipse x:Name="ThumbEllipse"
+                                                                             Width="20" Height="20"
+                                                                             Fill="{StaticResource PrimaryBrush}"/>
+                                                                </Grid>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="HoverRing" Property="Fill" Value="#1AD0BCFF"/>
+                                                                    </Trigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Thumb.Style>
+                                        </Thumb>
+                                    </Track.Thumb>
+                                </Track>
+                            </Grid>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -71,11 +71,31 @@ namespace AudioMonitor.UI.Views
         private bool _isExplicitClose = false; // Flag to allow explicit closing from tray
         private Hardcodet.Wpf.TaskbarNotification.TaskbarIcon? _myNotifyIcon; // Field for the TaskbarIcon
 
+        // Performance optimization: throttle UI updates to ~60 FPS instead of 44,100+ updates/sec
+        private System.Windows.Threading.DispatcherTimer? _uiUpdateTimer;
+        private double _latestDbfs = -96.0;
+        private readonly object _dbfsLock = new object();
+
+        // Cache last overlay state to avoid redundant updates
+        private string? _lastColorHex;
+        private double _lastOpacity = -1;
+        private bool _lastIsCritical = false;
+
+        // Cache threshold values to avoid repeated LINQ queries
+        private double _cachedSafeThreshold = -18;
+        private double _cachedCriticalThreshold = 0;
+
         public MainWindow()
         {
             InitializeComponent();
             Loaded += MainWindow_Loaded;
             // Closing event is handled by Window_Closing method defined below
+
+            // Initialize UI update timer (60 FPS = ~16.67ms interval)
+            _uiUpdateTimer = new System.Windows.Threading.DispatcherTimer();
+            _uiUpdateTimer.Interval = TimeSpan.FromMilliseconds(16);
+            _uiUpdateTimer.Tick += UiUpdateTimer_Tick;
+            _uiUpdateTimer.Start();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -89,6 +109,7 @@ namespace AudioMonitor.UI.Views
             else
             {
                 // Actual closing logic (save settings, dispose resources)
+                _uiUpdateTimer?.Stop();
                 if (_settingsService != null && _appSettings != null)
                 {
                     _settingsService.SaveApplicationSettings(_appSettings);
@@ -118,6 +139,7 @@ namespace AudioMonitor.UI.Views
                     _settingsService.SaveApplicationSettings(_appSettings);
 
                     // Re-initialize with default settings
+                    UpdateThresholdCache(); // Update cached threshold values
                     _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
 
                     // Update Device ComboBox
@@ -248,8 +270,11 @@ namespace AudioMonitor.UI.Views
             {
                 MessageBox.Show(Strings.LoadSettingsErrorMessage, Strings.LoadSettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 // Consider closing or using hardcoded defaults
-                _appSettings = ApplicationSettings.GetDefault(); 
-            }            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
+                _appSettings = ApplicationSettings.GetDefault();
+            }
+
+            UpdateThresholdCache(); // Cache threshold values for performance
+            _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels);
             _audioService = new AudioService();
             var groupedDevices = _audioService.GetGroupedInputDevices();
 
@@ -354,49 +379,84 @@ namespace AudioMonitor.UI.Views
 
         private void AudioService_LevelChanged(object? sender, double dbfs) // sender is nullable
         {
-            if (!_monitoringActive || _levelAnalyzer == null || _appSettings == null) return; // Null checks
+            if (!_monitoringActive) return;
+
+            // Performance optimization: Just store the latest value instead of updating UI directly
+            // The UI will be updated by the timer at 60 FPS
+            lock (_dbfsLock)
+            {
+                _latestDbfs = dbfs;
+            }
+        }
+
+        private void UiUpdateTimer_Tick(object? sender, EventArgs e)
+        {
+            if (!_monitoringActive || _levelAnalyzer == null || _appSettings == null) return;
+
+            double dbfs;
+            lock (_dbfsLock)
+            {
+                dbfs = _latestDbfs;
+            }
 
             var colorHex = _levelAnalyzer.GetInterpolatedColor(dbfs);
-            var color = OverlayColorHelper.FromHex(colorHex);
             double opacity = CalculateOpacity(dbfs);
             bool isCritical = IsCritical(dbfs);
-            
-            if (_appSettings.AcousticWarningEnabled && isCritical) 
-            {                                                        
-                _acousticWarningService?.PlayWarningSound(_appSettings.AcousticWarningVolume); // Null check
-            }                                                        
 
-            Dispatcher.Invoke(() =>
+            // Performance optimization: Only update overlays if state has changed
+            bool stateChanged = colorHex != _lastColorHex ||
+                               Math.Abs(opacity - _lastOpacity) > 0.01 ||
+                               isCritical != _lastIsCritical;
+
+            if (stateChanged)
             {
+                var color = OverlayColorHelper.FromHex(colorHex);
+
                 foreach (var overlay in _overlayWindows)
                     overlay.SetOverlayColor(color, opacity, isCritical);
-                
-                // Update tray icon directly
+
                 UpdateTaskbarIconState(_monitoringActive, isCritical);
-            });
+
+                // Update cache
+                _lastColorHex = colorHex;
+                _lastOpacity = opacity;
+                _lastIsCritical = isCritical;
+            }
+
+            // Always check for acoustic warning even if visual state hasn't changed
+            if (_appSettings.AcousticWarningEnabled && isCritical)
+            {
+                _acousticWarningService?.PlayWarningSound(_appSettings.AcousticWarningVolume);
+            }
         }
 
         private double CalculateOpacity(double dbfs)
         {
-            if (_appSettings == null) return 0.1; // Default low opacity if settings not loaded
-            var safeThreshold = _appSettings.WarningLevels.Thresholds.OrderBy(t => t.DBFSValue).FirstOrDefault()?.DBFSValue ?? -18;
-            var criticalThreshold = _appSettings.WarningLevels.Thresholds.OrderByDescending(t => t.DBFSValue).FirstOrDefault()?.DBFSValue ?? 0;
-            
-            double min = safeThreshold; // Pegel, bei dem es fast transparent ist
-            double max = criticalThreshold; // Pegel, bei dem es voll sichtbar ist
+            if (_appSettings == null) return 0.1;
 
-            if (dbfs <= min) return 0.1; // Nahezu transparent
-            if (dbfs >= max) return 1.0; // Voll sichtbar
+            // Use cached threshold values to avoid repeated LINQ queries
+            double min = _cachedSafeThreshold;
+            double max = _cachedCriticalThreshold;
+
+            if (dbfs <= min) return 0.1;
+            if (dbfs >= max) return 1.0;
 
             double norm = (dbfs - min) / (max - min);
-            return Math.Clamp(0.1 + norm * 0.9, 0.1, 1.0); // Skaliert von 0.1 bis 1.0
+            return Math.Clamp(0.1 + norm * 0.9, 0.1, 1.0);
         }
 
         private bool IsCritical(double dbfs)
         {
-            if (_appSettings == null) return false; // Not critical if settings not loaded
-            var criticalThreshold = _appSettings.WarningLevels.Thresholds.LastOrDefault();
-            return criticalThreshold != null && dbfs >= criticalThreshold.DBFSValue;
+            return dbfs >= _cachedCriticalThreshold;
+        }
+
+        private void UpdateThresholdCache()
+        {
+            if (_appSettings?.WarningLevels?.Thresholds != null && _appSettings.WarningLevels.Thresholds.Count > 0)
+            {
+                _cachedSafeThreshold = _appSettings.WarningLevels.Thresholds.Min(t => t.DBFSValue);
+                _cachedCriticalThreshold = _appSettings.WarningLevels.Thresholds.Max(t => t.DBFSValue);
+            }
         }
 
         public void ToggleMonitoring()
@@ -460,12 +520,13 @@ namespace AudioMonitor.UI.Views
         {
             if (_audioService == null || _appSettings == null || _settingsService == null) return;
 
+            // Performance optimization: Use proper Clone() method instead of inefficient JSON serialization
             ApplicationSettings? settingsCopy = null;
             try
             {
-                 settingsCopy = System.Text.Json.JsonSerializer.Deserialize<ApplicationSettings>(System.Text.Json.JsonSerializer.Serialize(_appSettings));
+                settingsCopy = _appSettings.Clone();
             }
-            catch (System.Text.Json.JsonException ex)
+            catch (Exception ex)
             {
                 Core.Logging.Log.Error("Failed to clone application settings for SettingsWindow.", ex);
                 MessageBox.Show(Strings.PrepareSettingsErrorMessage, Strings.PrepareSettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
@@ -501,8 +562,9 @@ namespace AudioMonitor.UI.Views
                         MessageBox.Show(Strings.ApplySettingsErrorMessage, Strings.ApplySettingsErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                         return;
                     }
-                    _appSettings = newSettings; 
+                    _appSettings = newSettings;
 
+                    UpdateThresholdCache(); // Update cached threshold values
                     _levelAnalyzer = new LevelAnalyzer(_appSettings.WarningLevels); 
 
                     if (_deviceComboBox != null && (_deviceComboBox.SelectedItem == null || ((AudioDevice)_deviceComboBox.SelectedItem).Id != _appSettings.SelectedAudioDeviceId))

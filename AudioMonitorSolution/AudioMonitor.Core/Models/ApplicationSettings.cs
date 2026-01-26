@@ -81,5 +81,27 @@ namespace AudioMonitor.Core.Models
             }
             return settings;
         }
+
+        /// <summary>
+        /// Creates a deep copy of this ApplicationSettings.
+        /// Performance optimization: Replaces inefficient JSON serialization/deserialization.
+        /// </summary>
+        public ApplicationSettings Clone()
+        {
+            return new ApplicationSettings
+            {
+                SelectedAudioDeviceId = this.SelectedAudioDeviceId,
+                LanguageCode = this.LanguageCode,
+                OverlayPosition = this.OverlayPosition,
+                OverlayThickness = this.OverlayThickness,
+                AcousticWarningEnabled = this.AcousticWarningEnabled,
+                AcousticWarningVolume = this.AcousticWarningVolume,
+                AutostartEnabled = this.AutostartEnabled,
+                WarningLevels = this.WarningLevels.Clone(),
+                ThresholdSafe = this.ThresholdSafe,
+                ThresholdWarning = this.ThresholdWarning,
+                ThresholdCritical = this.ThresholdCritical
+            };
+        }
     }
 }

@@ -34,5 +34,18 @@ namespace AudioMonitor.Core.Models
             // This means lower dBFS values (quieter sounds) come first.
             Thresholds = Thresholds.OrderBy(t => t.DBFSValue).ToList();
         }
+
+        /// <summary>
+        /// Creates a deep copy of this WarningConfiguration.
+        /// </summary>
+        public WarningConfiguration Clone()
+        {
+            return new WarningConfiguration
+            {
+                UseDefaultColorGradient = this.UseDefaultColorGradient,
+                DefaultColor = this.DefaultColor,
+                Thresholds = this.Thresholds.Select(t => t.Clone()).ToList()
+            };
+        }
     }
 }

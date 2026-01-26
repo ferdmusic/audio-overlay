@@ -37,6 +37,7 @@ namespace AudioMonitor.Core.Services
 #if ASIO_SUPPORT
         private AsioOut? _asioOutDevice; // For ASIO operations
         private float[]? _asioSampleBuffer; // Buffer for ASIO samples
+        private const int InitialAsioBufferSize = 8192; // Pre-allocate reasonable buffer size to reduce GC pressure
 #endif
         private string? _monitoringDeviceId;
         // private float[]? _asioBuffer; // CS0169: Field is never used. Commenting out for now
@@ -250,21 +251,31 @@ namespace AudioMonitor.Core.Services
                 return;
             }
 
-            if (_asioSampleBuffer == null || _asioSampleBuffer.Length < samplesToProcess)
+            // Performance optimization: Pre-allocate and only grow buffer when necessary
+            // Use power-of-2 growth to reduce allocations
+            if (_asioSampleBuffer == null)
             {
-                _asioSampleBuffer = new float[samplesToProcess];
+                int initialSize = Math.Max(InitialAsioBufferSize, samplesToProcess);
+                _asioSampleBuffer = new float[initialSize];
+            }
+            else if (_asioSampleBuffer.Length < samplesToProcess)
+            {
+                // Grow buffer by doubling size instead of allocating exact size
+                int newSize = _asioSampleBuffer.Length;
+                while (newSize < samplesToProcess)
+                    newSize *= 2;
+                _asioSampleBuffer = new float[newSize];
+                Log.Info($"ASIO buffer resized to {newSize} samples (needed {samplesToProcess})");
             }
 
             e.GetAsInterleavedSamples(_asioSampleBuffer);
 
+            // Performance optimization: Find max sample value efficiently
             float maxSample = 0f;
             for (int i = 0; i < samplesToProcess; i++)
             {
-                float absSample = Math.Abs(_asioSampleBuffer[i]); // Use the class member buffer
-                if (absSample > maxSample)
-                {
-                    maxSample = absSample;
-                }
+                float absSample = Math.Abs(_asioSampleBuffer[i]);
+                maxSample = Math.Max(maxSample, absSample);
             }
 
             if (maxSample == 0)
@@ -292,14 +303,11 @@ namespace AudioMonitor.Core.Services
 
             if (_waveInDevice.WaveFormat.Encoding == WaveFormatEncoding.IeeeFloat)
             {
+                // Performance optimization: Process float samples efficiently
                 for (int index = 0; index < e.BytesRecorded; index += 4) // 4 bytes per float
                 {
                     float sample = BitConverter.ToSingle(e.Buffer, index);
-                    float absSample = Math.Abs(sample);
-                    if (absSample > maxSample)
-                    {
-                        maxSample = absSample;
-                    }
+                    maxSample = Math.Max(maxSample, Math.Abs(sample));
                 }
             }
             else if (_waveInDevice.WaveFormat.Encoding == WaveFormatEncoding.Pcm)
@@ -307,43 +315,35 @@ namespace AudioMonitor.Core.Services
                 // Handle PCM data (e.g., 16-bit, 24-bit, 32-bit integer)
                 if (_waveInDevice.WaveFormat.BitsPerSample == 16)
                 {
+                    // Performance optimization: Process 16-bit PCM samples efficiently
                     for (int index = 0; index < e.BytesRecorded; index += 2) // 2 bytes per 16-bit sample
                     {
                         short sample = BitConverter.ToInt16(e.Buffer, index);
                         float sampleFloat = sample / 32768f; // Convert to -1.0 to 1.0 range
-                        float absSample = Math.Abs(sampleFloat);
-                        if (absSample > maxSample)
-                        {
-                            maxSample = absSample;
-                        }
+                        maxSample = Math.Max(maxSample, Math.Abs(sampleFloat));
                     }
                 }
                 else if (_waveInDevice.WaveFormat.BitsPerSample == 24)
                 {
+                    // Performance optimization: Process 24-bit PCM samples efficiently
                     for (int i = 0; i < e.BytesRecorded / 3; i++)
                     {
-                        byte byte1 = e.Buffer[i * 3];
-                        byte byte2 = e.Buffer[i * 3 + 1];
-                        byte byte3 = e.Buffer[i * 3 + 2];
-                        int sample24 = (byte3 << 16) | (byte2 << 8) | byte1;
+                        int baseIndex = i * 3;
+                        int sample24 = (e.Buffer[baseIndex + 2] << 16) | (e.Buffer[baseIndex + 1] << 8) | e.Buffer[baseIndex];
                         // Sign extend if negative
                         if ((sample24 & 0x800000) != 0) sample24 |= ~0xFFFFFF;
                         float sampleFloat = sample24 / 8388608f; // Convert to -1.0 to 1.0 range
-                        float absSample = Math.Abs(sampleFloat);
-                        if (absSample > maxSample) maxSample = absSample;
+                        maxSample = Math.Max(maxSample, Math.Abs(sampleFloat));
                     }
                 }
                 else if (_waveInDevice.WaveFormat.BitsPerSample == 32)
                 {
+                    // Performance optimization: Process 32-bit PCM samples efficiently
                     for (int index = 0; index < e.BytesRecorded; index += 4) // 4 bytes per 32-bit sample
                     {
                         int sample = BitConverter.ToInt32(e.Buffer, index);
                         float sampleFloat = sample / 2147483648f; // Convert to -1.0 to 1.0 range
-                        float absSample = Math.Abs(sampleFloat);
-                        if (absSample > maxSample)
-                        {
-                            maxSample = absSample;
-                        }
+                        maxSample = Math.Max(maxSample, Math.Abs(sampleFloat));
                     }
                 }
                 // Add other PCM formats as needed

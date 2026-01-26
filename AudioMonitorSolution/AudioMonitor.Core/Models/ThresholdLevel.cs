@@ -18,5 +18,13 @@ namespace AudioMonitor.Core.Models
             DBFSValue = dbfsValue;
             Color = color;
         }
+
+        /// <summary>
+        /// Creates a deep copy of this ThresholdLevel.
+        /// </summary>
+        public ThresholdLevel Clone()
+        {
+            return new ThresholdLevel(Name, DBFSValue, Color);
+        }
     }
 }

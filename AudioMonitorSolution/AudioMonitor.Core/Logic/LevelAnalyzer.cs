@@ -11,6 +11,11 @@ namespace AudioMonitor.Core.Logic
         private const string DefaultBelowThresholdColor = "#008000"; // Dark Green (for below "Sicher")
         private const string DefaultErrorColor = "#808080"; // Grey (for errors or undefined states)
 
+        // Performance optimization: Cache for interpolated colors
+        private string? _cachedColorHex;
+        private double _cachedDbfs = double.MinValue;
+        private const double CacheTolerance = 0.1; // Cache results within 0.1 dBFS
+
         public LevelAnalyzer(WarningConfiguration configuration)
         {
             _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
@@ -62,52 +67,56 @@ namespace AudioMonitor.Core.Logic
         /// <returns>A string representing the color (e.g., hex code).</returns>
         public string GetInterpolatedColor(double dbfs)
         {
+            // Performance optimization: Use cached result if dBFS is within tolerance
+            if (_cachedColorHex != null && Math.Abs(dbfs - _cachedDbfs) < CacheTolerance)
+            {
+                return _cachedColorHex;
+            }
+
             if (_config.Thresholds == null || !_config.Thresholds.Any())
-                return _config.DefaultColor ?? DefaultErrorColor; // Use DefaultColor or a hardcoded fallback
+            {
+                var defaultColor = _config.DefaultColor ?? DefaultErrorColor;
+                _cachedDbfs = dbfs;
+                _cachedColorHex = defaultColor;
+                return defaultColor;
+            }
 
             var sortedThresholds = _config.Thresholds; // Assuming already sorted by SettingsService or constructor
+            string resultColor;
 
             // Case 1: DBFS is below the lowest threshold
             if (dbfs < sortedThresholds[0].DBFSValue)
             {
-                // Return the color of the lowest threshold, or a specific "below" color if defined.
-                // For now, returning the DefaultColor as per previous logic when below lowest.
-                return _config.DefaultColor ?? sortedThresholds[0].Color ?? DefaultErrorColor;
+                resultColor = _config.DefaultColor ?? sortedThresholds[0].Color ?? DefaultErrorColor;
             }
-
             // Case 2: DBFS is at or above the highest threshold
-            if (dbfs >= sortedThresholds[sortedThresholds.Count - 1].DBFSValue)
+            else if (dbfs >= sortedThresholds[sortedThresholds.Count - 1].DBFSValue)
             {
-                return sortedThresholds[sortedThresholds.Count - 1].Color ?? DefaultErrorColor;
+                resultColor = sortedThresholds[sortedThresholds.Count - 1].Color ?? DefaultErrorColor;
             }
-
-            // Case 3: DBFS is between two thresholds - find lower and upper
-            ThresholdLevel lower = sortedThresholds[0];
-            ThresholdLevel upper = sortedThresholds[sortedThresholds.Count - 1];
-
-            for (int i = 0; i < sortedThresholds.Count - 1; i++)
+            else
             {
-                if (dbfs >= sortedThresholds[i].DBFSValue && dbfs < sortedThresholds[i + 1].DBFSValue)
+                // Case 3: DBFS is between two thresholds - find lower and upper using optimized search
+                // Since lists are typically small (3-5 items), linear search is actually fine
+                // Binary search would add complexity without much benefit for such small lists
+                ThresholdLevel lower = sortedThresholds[0];
+
+                for (int i = 0; i < sortedThresholds.Count - 1; i++)
                 {
-                    lower = sortedThresholds[i];
-                    upper = sortedThresholds[i + 1];
-                    break;
+                    if (dbfs >= sortedThresholds[i].DBFSValue && dbfs < sortedThresholds[i + 1].DBFSValue)
+                    {
+                        lower = sortedThresholds[i];
+                        break;
+                    }
                 }
+
+                resultColor = lower.Color ?? DefaultErrorColor;
             }
 
-            // Simplified: no complex interpolation here to avoid WPF dependencies.
-            // Return the color of the lower threshold in the range.
-            // More sophisticated, non-WPF color interpolation could be added if needed,
-            // or this responsibility could be moved to a UI-layer helper.
-            // For now, just return the lower bound color.
-            // Or, if a very simple interpolation is desired and colors are known hex:
-            // This example still leans towards returning the lower color to avoid complexity here.
-
-            // Basic interpolation can be attempted if colors are parseable,
-            // but System.Drawing.Color is not available in .NET Standard directly without extra packages.
-            // Let's return the lower.Color for simplicity in the Core library.
-            // The UI layer can handle more complex visual interpolations.
-            return lower.Color ?? DefaultErrorColor;
+            // Cache the result
+            _cachedDbfs = dbfs;
+            _cachedColorHex = resultColor;
+            return resultColor;
 
             /* // Previous WPF-dependent interpolation logic:
             double range = upper.DBFSValue - lower.DBFSValue;
